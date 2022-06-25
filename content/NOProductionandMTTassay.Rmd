@@ -2,7 +2,10 @@
 title: "NO Production and MTT Assay"
 author: "Nur Aziz"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ### Compound/Extract Preparation

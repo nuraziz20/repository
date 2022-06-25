@@ -1,0 +1,31 @@
+---
+title: "RNA Precipitation and cDNA synthesis"
+author: "Nur Aziz"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+### RNA Precipitation
+1. Treat trizol 300 ul/each well (format 12 well plate)
+2. Incubate 10 min on-ice
+3. Transfer trizol-cell lysate to e-tube [Pre-marked]
+4. Add 30 ul BCP solution into e-tube, vortex, and then keep on ice for 5 min
+5. Spindown at 12.000 g for 15 min
+6. Take e-tube back to ice, transfer Aquous phase (the upper supernatant contain RNA) approximately 120 ul to a new e-tube [Pre-marked]
+7. Put same volumes of Isopropanol with supernatant into e-tube
+8. Invert 5 times gently and then incubate for 10 min at room temperature
+9. Spindown at 12.000 g for 8 min
+10. Look at the visible pellets, pour out whole supernatant
+11. Add 1 mL 75% EtOH in DEPC-treated water into e-tube
+12. After inverting, check pellets whether resuspended or not
+13. Spindown 7500 g for 5 min
+14 Remove supernatant using pipet and dry at room temperature
+15. Resuspend the pellet with 30 ul DEPC-treated water
+
+### cDNA synthesis
+1. Measure 
+
+

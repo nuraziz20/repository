@@ -2,19 +2,22 @@
 title: "NO Production and MTT Assay"
 author: "Nur Aziz"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ### Compound/Extract Preparation
 * Extract = 16.42 mg/tube 
 * Make stock 100 mg/ml --> add 0.1642 ml = 164 ul
 
-```{r setup, out.width="75%",echo=FALSE, eval=TRUE}
+```{r setup, out.width="60%",echo=FALSE, eval=TRUE}
 knitr::include_graphics("NO1.png")
 
 ```
 
-```{r image2, out.width="50%",echo=FALSE, eval=TRUE}
+```{r image2, out.width="55%",echo=FALSE, eval=TRUE}
 knitr::include_graphics("NO2.png")
 
 ```
