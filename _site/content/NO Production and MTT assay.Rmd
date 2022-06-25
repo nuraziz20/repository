@@ -13,5 +13,5 @@ knitr::opts_chunk$set(echo = TRUE)
 * Extract = 16.42 mg/tube 
 * Make stock 100 mg/ml --> add 0.1642 ml = 164 ul
 
-! [NO1](~/Repository/repository/content/NO 1.png)
-! [NO2](~/Repository/repository/content/NO 2.png)
+! [NO1](content/NO 1.png)
+! [NO2](content/NO 2.png)

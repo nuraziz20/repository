@@ -10,4 +10,4 @@ This is where you link to the other files, which are in a folder in the main dir
 * [File 1](content/file1.html)  
 * [File 2](content/file2.html)  
 * [File 3](content/file3.html)
-* [NO Production and MTT Assay](~/Repository/repository/content/NO Production and MTT assay.html)
+* [NO Production and MTT Assay](content/NO Production and MTT assay.html)
