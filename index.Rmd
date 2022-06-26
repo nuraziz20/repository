@@ -123,7 +123,7 @@ cv_entries %>%
 ### Grants and Awards {.grants .nohead}
 ```{r}
 cv_entries %>% 
-  filter(type == 'grants_and_awards') %>% 
+  filter(type == 'awards') %>% 
   mutate(what = str_c(what, ", ", where)) %>% 
   select(year_begin, what) %>% 
   kable()
