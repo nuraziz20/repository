@@ -132,29 +132,6 @@ cv_entries %>%
 ```
 
 
-### Media coverage {.media .nohead}
-```{r}
-cv_entries %>% 
-  filter(type == 'media') %>%
-  select(year_begin, what) %>% 
-  kable()
-```
-
-### Service {.service .nohead}
-```{r}
-cv_entries %>% 
-  filter(type == 'service') %>% 
-  mutate(year_end = ifelse(year_end == "present", "", year_end)) %>%
-  mutate(where = ifelse(!is.na(url), str_c("[", where, "](", url, ")"), where)) %>% 
-  mutate(what = ifelse(!is.na(additional_info),
-                       str_c(what, "<br class='work-break'>", where),
-                      str_c(what, "<br class='work-break'>", where))) %>% 
-  select(year, what) %>% 
-  kable()
-
-```
-
-
 # Work (non-academia)
 ## Selected work experience {.work .nohead .vertical-top}
 ```{r}
