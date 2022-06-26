@@ -1,7 +1,7 @@
 navbar: 
-  title: Title
+  title: About Me
   left:
-  - text: Main page that links to files
+  - text: Wet Lab Notebook
     href: content.html
 output:
   html_document:
