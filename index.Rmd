@@ -69,7 +69,8 @@ publications_table <- publications %>%
                            str_c(author_year, title, venue, "<i class='fas fa-award'></i><em>", award, "</em>", sep = " "),
                            str_c(author_year, title, venue, sep = " "))) %>%
   mutate(citation = str_replace(citation, "Nur Aziz", "_Nur Aziz_")) %>% # make my name italicised
-  mutate(citation = str_replace(citation, "Nur Aziz*", "__Nur Aziz__")) %>%
+  mutate(citation = str_replace(citation, "Nur Aziz", "__Nur Aziz__")) %>%
+  mutate(citation = str_replace(citation, "shared first authorships", "__shared first authorships__")) %>%
   filter(type != "master's thesis") %>%
   select(type, citation)
 
