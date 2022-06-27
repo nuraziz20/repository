@@ -36,6 +36,7 @@ cv_entries <- read_csv("_content/cv_entries.csv") %>%
 
 <br>
 
+
 # Summary
 
 I am passionate about using insights from the behavioural neurosciences to **design digital technology that is sensitive to human limitations and biases**, particularly in relation to attention and self-regulation.
@@ -47,6 +48,12 @@ My **personal interests** include travelling & couchsurfing, samatha meditation,
 Download a brief version of [my CV as PDF](https://github.com/ulyngs/pagedown-cv/raw/master/_pdfs/lyngs_cv_2019_june.pdf).
 
 <br>
+
+```{r home, out.width="50%",echo=FALSE, eval=TRUE}
+knitr::include_graphics('img/home1.jpg')
+
+```
+
 
 # Academia
 ## Education {.education .nohead}
