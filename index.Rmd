@@ -130,42 +130,18 @@ cv_entries %>%
   kable()
 
 ```
-
-
-# Work (non-academia)
-## Selected work experience {.work .nohead .vertical-top}
+### Research Internship {.grants .nohead}
 ```{r}
 cv_entries %>% 
-  filter(type == 'work', is.na(website)) %>% 
-  mutate(additional_info = replace_na(additional_info, "")) %>% 
-  mutate(what = str_c("<span class='work-title'>", what, "</span><br class='work-break'>", where, "<br>", additional_info)) %>% 
-  arrange(desc(year_begin)) %>% 
-  select(year, what) %>% 
-  kable()
-```
-
-## Professional development {.prof-dev .nohead}
-```{r}
-cv_entries %>% 
-  filter(type == 'prof-dev') %>% 
+  filter(type == 'internship') %>% 
   mutate(what = str_c(what, ", ", where)) %>% 
   select(year_begin, what) %>% 
   kable()
+
 ```
 
 # Technical
-## Software development {.cv-table .nohead .vertical-top}
-```{r}
-cv_entries %>% 
-  filter(type == 'programming') %>% 
-  replace_na(list(where = "", additional_info = "")) %>% 
-  mutate(what = str_c(what, ", ", where, "<br>", additional_info)) %>% 
-  select(year_begin, what) %>% 
-  arrange(desc(year_begin)) %>% 
-  kable(align = c('l', 'l'))
-```
-
-## Skills {.technical .nohead}
+## Wet Lab Skills {.technical .nohead}
 ```{r}
 cv_entries %>% 
   filter(type == 'technical') %>% 
@@ -174,12 +150,41 @@ cv_entries %>%
   kable()
 ```
 
+## Dry Lab Skills {.technical .nohead}
+```{r}
+cv_entries %>% 
+  filter(type == 'bioinformatics') %>% 
+  mutate(what = str_c("- *", what, "* ", additional_info)) %>% 
+  select(what) %>% 
+  kable()
+```
+
+## Other software proficiency {.technical .nohead}
+```{r}
+cv_entries %>% 
+  filter(type == 'other software') %>% 
+  mutate(what = str_c("- *", what, "* ", additional_info)) %>% 
+  select(what) %>% 
+  kable()
+```
 
 # Personal
-## Skills & volunteering {.personal .service .nohead}
+## Volunteering {.personal .service .nohead}
 ```{r}
 cv_entries %>%
   filter(type == 'volunteering') %>%
+  mutate(what = str_c("<span class='work-title'>", what, "</span><br class='work-break'>", where)) %>%
+  mutate(what = ifelse(!is.na(additional_info), str_c(what, "<br>", additional_info), what)) %>%
+  arrange(desc(year), desc(year_end)) %>%
+  select(year, what) %>%
+  kable()
+```
+
+## Book written {.personal .service .nohead}
+```{r}
+cv_entries %>%
+  filter(type == 'book') %>%
+  mutate(what = ifelse(!is.na(url), str_c("[", what, "](", url, ")"), title)) %>%
   mutate(what = str_c("<span class='work-title'>", what, "</span><br class='work-break'>", where)) %>%
   mutate(what = ifelse(!is.na(additional_info), str_c(what, "<br>", additional_info), what)) %>%
   arrange(desc(year), desc(year_end)) %>%
