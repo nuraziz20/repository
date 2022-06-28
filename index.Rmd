@@ -60,7 +60,7 @@ Download a brief version of [my CV as PDF](https://github.com/ulyngs/pagedown-cv
 <div class="info-box">
 
 | Center | Left |
-|-:|:-|
+|-:|-:|
 | <i class="fas fa-map-marker-alt"></i>|Department of Integrative Biotechnology,\
 Sungkyunkwan University, South Korea|
 | <i class="fas fa-envelope"></i> | nuraziz\@skku.edu |
