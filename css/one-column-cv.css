@@ -64,10 +64,10 @@ h2.box {
   margin-bottom: 0;
 }
 .info-box {
-  background-color: #F5DD9E;
-  margin: 0;
+padding: 10px 2px;
+  margin: 0.2em 0 0 0;
   line-height: 125%;
-  border: none;
+  border-radius: 2px;
 }
 .info-box thead {
   display: none;
@@ -124,3 +124,4 @@ td {
 .work-break {
   height: 100px;
 }
+
