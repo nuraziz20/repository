@@ -39,11 +39,9 @@ cv_entries <- read_csv("_content/cv_entries.csv") %>%
 
 # Summary
 
-I am passionate about using insights from the behavioural neurosciences to **design digital technology that is sensitive to human limitations and biases**, particularly in relation to attention and self-regulation.
+I am passionate about molecular biology research, particularly in **cancer biology** and **innate immunity**. 
 
-My **academic and professional background** is highly interdisciplinary, and I try to integrate best practices from many work spheres, such as using tools from large-scale event management to structure academic projects.
-
-My **personal interests** include travelling & couchsurfing, samatha meditation, dancing (Cuban salsa and swing), and playing music (whatever instruments I can get my hands on, and ideally with the [Karaoke Collective](https://karaokecollective.com)).
+My **academic background** mainly focused on understanding the molecular complexity of protein methylation in cancer. The need to explore public RNAseq datasets from cancer patients drove me to (self)-study **bioinformatics** which I also found a very fascinating field. In addition, I am also familiar with molecular signaling such as inflammation-related transcription factor signaling ie. NF-kB, AP-1, and IRF3. As part of my combined Master-PhD study, I have elucidated several molecular targets of plant extracts or compounds in the context of their anti-inflammation property. 
 
 Download a brief version of [my CV as PDF](https://github.com/ulyngs/pagedown-cv/raw/master/_pdfs/lyngs_cv_2019_june.pdf).
 
