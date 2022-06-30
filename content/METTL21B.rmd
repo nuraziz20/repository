@@ -1,0 +1,190 @@
+---
+title: "Plotting with ggplot -case study METTL21B paper"
+author: "Nur Aziz"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+
+---
+### Note
+* Here I documented the codes I used to make graph/figuring for EEF1AKMT3 paper published in [Cancer Letters](https://doi.org/10.1016/j.canlet.2022.215803).
+* Unfortunately, the graph did not look so good on the published one because it was compressed by Ms. Word. 
+* These are the codes just for figuring. Data analysis was both performed in Ms. Excel and R. Don't get confused.
+
+### Packages and libraries
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(dplyr)
+library(ggpubfigs)
+library(forcats)
+library(svglite)
+Sys.setenv(LANG='en')
+library(gridExtra)
+```
+### Make uniform graph format
+```{r 2, echo=TRUE, message=FALSE, warning=FALSE}
+
+theme_Publication <- function(base_size=14, base_family="helvetica") {
+  library(grid)
+  library(ggthemes)
+  (theme_foundation(base_size=base_size, base_family=base_family)
+    + theme(plot.title = element_text(face = "bold",
+                                      size = rel(1.2), hjust = 0.5),
+            text = element_text(),
+            panel.background = element_rect(colour = NA),
+            plot.background = element_rect(colour = NA),
+            panel.border = element_rect(colour = NA),
+            axis.title = element_text(face = "bold",size = rel(1)),
+            axis.title.y = element_text(angle=90,vjust =2),
+            axis.title.x = element_text(vjust = -0.2),
+            axis.text = element_text(), 
+            axis.line = element_line(colour="black"),
+            axis.ticks = element_line(),
+            panel.grid.major = element_line(colour="#f0f0f0"),
+            panel.grid.minor = element_blank(),
+            legend.key = element_rect(colour = NA),
+            legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.key.size= unit(0.2, "cm"),
+            legend.margin = unit(0, "cm"),
+            legend.title = element_text(face="italic"),
+            plot.margin=unit(c(10,5,5,5),"mm"),
+            strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+            strip.text = element_text(face="bold")
+    ))
+  
+}
+
+pd <- position_dodge(0.1)
+
+{
+friendly_pals <- list(
+  bright_seven = c("#4477AA", "#228833", "#AA3377", "#BBBBBB", "#66CCEE", "#CCBB44", "#EE6677"),
+  contrast_three = c("#004488", "#BB5566", "#DDAA33"),
+  vibrant_seven = c("#0077BB", "#EE7733", "#33BBEE", "#CC3311", "#009988", "#EE3377", "#BBBBBB"),
+  muted_nine = c("#332288", "#117733", "#CC6677", "#88CCEE", "#999933", "#882255", "#44AA99", "#DDCC77", "#AA4499"),
+  nickel_five = c("#648FFF", "#FE6100", "#785EF0", "#FFB000", "#DC267F"),
+  ito_seven = c("#0072B2", "#D55E00", "#009E73", "#CC79A7", "#56B4E9", "#E69F00", "#F0E442")
+)
+}
+
+contrast_three = c("#004488", "#BB5566", "#DDAA33")
+```
+
+### Pair Plot
+
+* Geom point
+* Geom line with different color
+```{r 3, echo=TRUE, message=FALSE, warning=FALSE}
+Fig1<- read.delim("~/Repository/repository/docs/M21B/M21B Fig 1BC.csv")
+head(Fig1)
+
+Fig1<-Fig1 %>% 
+  filter(Methyltransferase=='METTL21A'|Methyltransferase=='METTL21B'|Methyltransferase=='METTL21C'|Methyltransferase=='METTL21D') 
+
+Fig1<-Fig1 %>% 
+  select(Value,Tissue,Patient,Methyltransferase) %>% 
+  spread(Tissue, Value) %>% 
+  mutate(is_increasing=Tumor>NAT) %>% 
+  gather("Tissue","Va",3:4)
+
+b<-ggplot(Fig1,aes(x=Tissue,y=Va))+
+  geom_point(alpha=0.2,size=1.5)+
+  geom_line(aes(group = Patient, col = is_increasing),alpha=0.2,show.legend = NULL,size=0.7)+
+  labs(y=element_blank(),x=element_blank())+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        aspect.ratio = 1,
+        panel.spacing = unit(1.5,'cm'))+
+  facet_grid(~Methyltransferase,labeller=label_wrap_gen(width=16))
+
+c<-b+theme_Publication()+
+  scale_fill_manual(values = friendly_pal("contrast_three"))+
+  scale_color_manual(values = friendly_pal("contrast_three"))+
+  scale_y_continuous(expand=expand_scale(mult = c(0.1,0.2)))+
+  ylab('Expression level (RU)')+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        strip.text.x = element_text(size = 12, face="bold",family="Arial",colour="#f0f0f0"))
+c
+```
+
+### Bar graph stacking
+* Calculate persentage downregulated and upregulated
+```{r 4, echo=TRUE, message=FALSE, warning=FALSE}
+#count upregulated and downregulated
+upre<-Fig1 %>% 
+  filter(is_increasing %in% TRUE) %>% 
+  group_by(Methyltransferase) %>% tally()
+
+downre<-Fig1 %>% 
+  filter(is_increasing %in% FALSE) %>% 
+  group_by(Methyltransferase) %>% tally()
+
+#make dataframe 
+dupre<-data.frame(upre)
+dupre<-dupre %>% 
+  mutate("Regulation"="Up-regulated")
+
+ddown<-data.frame(downre)
+ddown<-ddown %>% 
+  mutate("Regulation"="Down-regulated")
+
+
+#merge dataframe into one --> add as additional row
+mergebind <- rbind(dupre, ddown)
+mergebind
+
+
+#make column persentage
+mergepersentage <- mergebind %>% 
+  group_by(Methyltransferase) %>% 
+  mutate(pct=prop.table(n))
+mergepersentage
+```
+* Plotting
+```{r 5, echo=TRUE, message=FALSE, warning=FALSE}
+
+level_order <- c('METTL21A', 'METTL21D','METTL21C','METTL21B')
+level_order2<-c('Down-regulated','Up-regulated')
+a<-mergepersentage %>% 
+  ggplot(aes(x=factor(Methyltransferase,level=level_order),y=pct,fill=factor(Regulation,level=level_order2)))+
+  geom_col(position=position_stack(reverse = TRUE))+
+  geom_text(aes(label=scales::percent(pct)),vjust=+1.75,col="white",size=3.75,position = position_stack(reverse = TRUE))+
+  scale_y_continuous(labels = scales::percent)
+c<-a+theme_Publication()+
+  scale_fill_manual(values = friendly_pal("contrast_three"))+
+  scale_color_manual(values = friendly_pal("contrast_three"))+
+  ylab('Relative case number \n (compared to NAT)')+
+  theme(legend.position = 'top',
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x=element_text(angle = 45,vjust=1,hjust=1),
+        axis.text = element_text(family = 'Arial'),
+        aspect.ratio = 1)
+c  
+```
+
+### Bar graph with hline
+```{r 6, echo=TRUE, message=FALSE, warning=FALSE}
+######Figure 1F#####
+Fig1F<-read.delim("~/Repository/repository/docs/M21B/M21B Fig 1F.csv")
+head(Fig1F)
+level_ordercell<-c('HFE145','MKN45','SNU484','SNU601','SNU668','MKN74','SNU719','MKN1')
+  
+
+a<-Fig1F %>% 
+  ggplot(aes(x=factor(Cell,levels = level_ordercell),y=Average,fill=factor(Group.c)))+
+  geom_bar(stat="identity",color='black')+
+  geom_hline(aes(yintercept=1), color=friendly_pal("ito_seven")[3], linetype="dashed",size=.8)
+a
+a+theme_Publication()+
+  scale_fill_manual(values = friendly_pal("contrast_three"))+
+  scale_color_manual(values = friendly_pal("contrast_three"))+
+  scale_y_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.text.x = element_text(angle = 90,vjust = 1,hjust = 1),
+        axis.title.y = element_blank(),
+        legend.position = 'none',
+        axis.title.x = element_blank(),
+        aspect.ratio = 1)
+```

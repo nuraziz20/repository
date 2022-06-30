@@ -1,0 +1,18 @@
+---
+title: "METTL21B/EEF1AKMT3 paper"
+author: "Nur Aziz"
+output:
+  html_document:
+    css:
+    - https://use.fontawesome.com/releases/v5.7.2/css/all.css
+    - css/style.css
+    - css/one-column-cv.css
+    toc: true
+    toc_float: true
+
+---
+
+* Here I documented the codes I used to make graph/figuring for EEF1AKMT3 paper published in [Cancer Letters](https://doi.org/10.1016/j.canlet.2022.215803).
+* Unfortunately, the graph did not look so good on the published one because it was compressed by Ms. Word. 
+* These are the codes just for figuring. Data analysis was both performed in Ms. Excel and R. Don't get confused.
+
