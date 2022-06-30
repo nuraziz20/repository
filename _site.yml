@@ -1,6 +1,6 @@
 navbar: 
   title: About Me
-  right:
+  left:
   - text: Wet Lab Notebook
     href: wet-lab-notebook.html
   - text: Dry Lab Notebook

@@ -2,7 +2,11 @@
 title: "Dry Lab Notebook"
 output:
   html_document:
-    css: ["css/make-cv-like-other.css", "css/one-column-cv.css", "css/website-page.css", "css/style.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css"]
+    css:
+    - css/make-cv-like-other.css
+    - https://use.fontawesome.com/releases/v5.7.2/css/all.css
+    - css/style.css
+    - css/one-column-cv.css
     toc: true
     toc_float: true
 
