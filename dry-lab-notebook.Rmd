@@ -14,7 +14,7 @@ output:
 
 This is where you link to the other files, which are in a folder in the main directory. Make sure the name of the folder does not have an underscore in it. You also need to go knit those files within the folder first. And, if you update the file, **you need to reknit it!**. 
 
-
+* [Plotting with ggplot -case study METTL21B paper](content/METTL21B.html)
 * [Utilize microarray/RNAseq from GEO dataset](content/NOProductionandMTTassay.html)
 * [Combat GTEx + TCGA](content/NOProductionandMTTassay.html)
 * [Playing with ggplot](content/NOProductionandMTTassay.html)

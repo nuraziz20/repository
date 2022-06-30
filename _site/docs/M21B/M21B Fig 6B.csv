@@ -1,0 +1,21 @@
+y	x	pvalue	r2value	pvalue converted	pval
+Mettl21B & p-MKK7	All	0.0099	0.052441	0.01	b
+p-MKK7 & p53	All	0.0306	0.03936256	0.05	c
+Mettl21B & p-MKK7	Metastasis	0.005	0.274576	0.01	b
+p-MKK7 & p53	Metastasis	0.0056	0.26853124	0.01	b
+Mettl21B & p-MKK7	Recurrence	0.0001	0.59629284	0.001	a
+p-MKK7 & p53	Recurrence	0.08	0.08271376	0.5	d
+Mettl21B & p-MKK7	T1&T2	0.0004	0.60512841	0.001	a
+p-MKK7 & p53	T1&T2	0.3051	0.07485696	0.5	d
+Mettl21B & p-MKK7	T3&T4	0.0254	0.04848804	0.05	c
+p-MKK7 & p53	T3&T4	0.0449	0.03924361	0.05	c
+Mettl21B & p-MKK7	Lymphovascular invasion	0.1845	0.02304324	0.5	d
+p-MKK7 & p53	Lymphovascular invasion	0.1978	0.02172676	0.5	d
+Mettl21B & p-MKK7	Neural invasion	0.0029	0.10817521	0.01	b
+p-MKK7 & p53	Neural invasion	0.1884	0.02208196	0.5	d
+Mettl21B & p-MKK7	Intestinal	0.0041	0.15912121	0.01	b
+p-MKK7 & p53	Intestinal	0.1692	0.03900625	0.5	d
+Mettl21B & p-MKK7	Diffuse	0.0001	0.354025	0.001	a
+p-MKK7 & p53	Diffuse	0.8737	0.000555545	1	e
+Mettl21B & p-MKK7	Signet ring	0.0001	0.42928704	0.001	a
+p-MKK7 & p53	Signet ring	0.8347	0.00147456	1	e
