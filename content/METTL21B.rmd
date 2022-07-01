@@ -188,3 +188,104 @@ a+theme_Publication()+
         axis.title.x = element_blank(),
         aspect.ratio = 1)
 ```
+
+### Bar graph with errorbar
+```{r 7, echo=TRUE, message=FALSE, warning=FALSE}
+Fig2A<-read.delim("~/Repository/repository/docs/M21B/M21B Fig 2A.csv",sep = '\t')
+head(Fig2A)
+
+{
+  df<-Fig2A
+df.summary<-df %>% 
+  group_by(Group) %>% 
+  summarise(
+    sd=sd(`Value`,na.rm = TRUE),
+    Mean=mean(`Value`)
+  )
+
+df.summary
+df  
+
+a<-ggplot(df.summary,aes(fill=Group))+
+  geom_bar(aes(x=Group,y=Mean),stat = 'identity',color='black')+
+  geom_jitter(data=df,aes(x=Group,y=Value),position=position_jitter(.2),color='black')+
+  geom_errorbar(aes(x=Group, y=Mean, ymin=Mean-sd,ymax=Mean+sd),width=.25)
+a+theme_Publication()+
+  scale_fill_manual(values = friendly_pal("contrast_three"))+
+  scale_color_manual(values = friendly_pal("contrast_three"))+
+  scale_y_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        axis.title.y = element_blank(),
+        legend.position = 'none',
+        axis.title.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.75)
+}
+```
+
+### Bar graph (multiple)
+```{r 8, echo=TRUE, message=FALSE, warning=FALSE}
+Fig5H<-read.delim("~/Repository/repository/docs/M21B/M21B Fig 5H.csv",sep = '\t')
+
+head(Fig5H)
+bw<-Fig5H
+bw$Group <- factor(bw$Group, levels = c("Myc-MAP2K7 WT", "Myc-MAP2K7 K296R"))
+bw$Phospho <- factor(bw$Phospho, levels = c('TP53 (Phospho-T18)',
+                                            'TP53 (Phospho-S37)',
+                                            'TP53 (Phospho-S46)',
+                                            'CHEK2 (Phospho-T387)',
+                                            'ESR1 (Phospho-S118)',
+                                            'PRKDC (Phospho-T2647)',
+                                            'PLCB3 (Phospho-S537)',
+                                            'MARCKS (Phospho-S158)'))
+
+dodge<-position_dodge(width=.75)
+a<-ggplot(bw,aes(x=`Phospho`,y=`Value`))+ 
+  geom_bar(stat="identity", 
+           position=position_dodge(), size=.6,aes(fill=`Group`),color='black')+
+  geom_hline(aes(yintercept=1),linetype='dotted',color=c(friendly_pal("contrast_three")[2]),size=1.2)
+a+theme_Publication()+
+  scale_fill_manual(values = c('#E8E9F3',friendly_pal("contrast_three")))+
+  scale_color_manual(values = c('#E8E9F3',friendly_pal("contrast_three")))+
+  scale_y_continuous(expand=expand_scale(mult = c(0,0.25)),breaks=(seq(0,2.5,0.5)))+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        axis.title.y = element_blank(),
+        legend.position = 'top',
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = .7)
+```
+
+### Point 3 variable
+
+```{r 9,echo=TRUE, message=FALSE, warning=FALSE }
+Fig6B<-read.delim('~/Repository/repository/docs/M21B/M21B Fig 6B.csv', sep='\t')
+head(Fig6B)
+
+bw$Phospho <- factor(bw$Phospho, levels = c('TP53 (Phospho-T18)',
+                                            'TP53 (Phospho-S37)',
+                                            'TP53 (Phospho-S46)',
+                                            'CHEK2 (Phospho-T387)',
+                                            'ESR1 (Phospho-S118)',
+                                            'PRKDC (Phospho-T2647)',
+                                            'PLCB3 (Phospho-S537)',
+                                            'MARCKS (Phospho-S158)'))
+Fig6B$x <- factor(Fig6B$x, levels=c("All","Metastasis","Recurrence","T1&T2","T3&T4","Lymphovascular invasion","Neural invasion","Intestinal","Diffuse","Signet ring"))
+Fig6B$y <- factor(Fig6B$y,levels=c("p-MKK7 & p53","Mettl21B & p-MKK7"))
+
+Fig6B %>% 
+  ggplot(aes(x,y))+
+  geom_point(aes(colour=pval,size=r2value))+
+  theme_Publication()+
+  scale_size_continuous(limits=c(0,1),breaks=c(1,0.75,0.5,0.25,0))+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        axis.title.y = element_blank(),
+        legend.position = 'top',
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y = element_blank(),
+        aspect.ratio = .25)+
+  scale_fill_viridis_d()+
+  scale_color_viridis_d()
+```
