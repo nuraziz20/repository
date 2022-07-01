@@ -289,3 +289,27 @@ Fig6B %>%
   scale_fill_viridis_d()+
   scale_color_viridis_d()
 ```
+
+### Point with correlation
+```{r 10, ,echo=TRUE, message=FALSE, warning=FALSE}
+corre<-read.delim('~/Repository/repository/docs/M21B/correlation.csv', sep='\t')
+library(scales)
+corre %>% 
+  ggplot(aes(x=`METTL21B`,y=`p.MKK7`))+
+  theme_bw()+
+  scale_y_log10(
+    breaks = trans_breaks("log10", function(x) 10^x),
+    labels = trans_format("log10", math_format(10^.x)))+
+  scale_x_log10(
+    breaks = trans_breaks("log10", function(x) 10^x),
+    labels = trans_format("log10", math_format(10^.x)))+
+  geom_point()+
+  geom_smooth(method=lm, fullrange=FALSE,se=TRUE)+
+  theme(axis.text=element_text(size=10,family = "Arial",color = "black"))+
+  theme(text=element_text(size=11,family = "Arial"))+
+  theme(aspect.ratio = 1)+
+  theme(axis.title.x = element_text(vjust=-2),axis.title.y = element_text(vjust=+2))+
+  labs(x=paste0("METTL21B protein level", "\n", "(compared to paired NAT)"))+
+  theme(strip.text.x = element_text(size = 10, face="bold",family="Arial"))+
+  labs(y = paste0("p-MKK7 protein level", "\n", "(compared to paired NAT)"))
+```
