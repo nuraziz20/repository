@@ -3,6 +3,12 @@ title: "Plotting with ggplot -case study METTL21B paper"
 author: "Nur Aziz"
 output:
   html_document:
+    css:
+    - "~/Repository/repository/css/make-cv-like-other.css"
+    - "~/Repository/repository/css/one-column-cv.css"
+    - "~/Repository/repository/css/website-page.css"
+    - "~/Repository/repository/css/style.css"
+    - https://use.fontawesome.com/releases/v5.7.2/css/all.css
     toc: true
     toc_float: true
 

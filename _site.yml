@@ -4,7 +4,9 @@ navbar:
   - text: Wet Lab Notebook
     href: wet-lab-notebook.html
   - text: Dry Lab Notebook
-    href: dry-lab-notebook.html
+    menu:
+    - text: Plotting (EEF1AKMT3 paper example)
+      href: METTL21B.html
 output:
   html_document:
-    theme: flatly
+    theme: yeti
