@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Nur Aziz" />
+
+
+<title>Plotting with ggplot -case study METTL21B paper</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="css/make-cv-like-other.css" type="text/css" />
+<link rel="stylesheet" href="css/one-column-cv.css" type="text/css" />
+<link rel="stylesheet" href="css/website-page.css" type="text/css" />
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">About Me</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="wet-lab-notebook.html">Wet Lab Notebook</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Dry Lab Notebook
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="METTL21B.html">Plotting (EEF1AKMT3 paper example)</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Plotting with ggplot -case study METTL21B
+paper</h1>
+<h4 class="author">Nur Aziz</h4>
+
+</div>
+
+
+<div id="note" class="section level3">
+<h3>Note</h3>
+<ul>
+<li>Here I documented the codes I used to make graph/figuring for
+EEF1AKMT3 paper published in <a
+href="https://doi.org/10.1016/j.canlet.2022.215803">Cancer
+Letters</a>.</li>
+<li>Unfortunately, the graph did not look so good on the published one
+because it was compressed by Ms. Word.</li>
+<li>These are the codes just for figuring. Data analysis was both
+performed in Ms. Excel and R. Don’t get confused.</li>
+</ul>
+</div>
+<div id="packages-and-libraries" class="section level3">
+<h3>Packages and libraries</h3>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+library(ggpubfigs)
+library(forcats)
+library(svglite)
+Sys.setenv(LANG=&#39;en&#39;)
+library(gridExtra)</code></pre>
+</div>
+<div id="make-uniform-graph-format" class="section level3">
+<h3>Make uniform graph format</h3>
+<pre class="r"><code>theme_Publication &lt;- function(base_size=14, base_family=&quot;helvetica&quot;) {
+  library(grid)
+  library(ggthemes)
+  (theme_foundation(base_size=base_size, base_family=base_family)
+    + theme(plot.title = element_text(face = &quot;bold&quot;,
+                                      size = rel(1.2), hjust = 0.5),
+            text = element_text(),
+            panel.background = element_rect(colour = NA),
+            plot.background = element_rect(colour = NA),
+            panel.border = element_rect(colour = NA),
+            axis.title = element_text(face = &quot;bold&quot;,size = rel(1)),
+            axis.title.y = element_text(angle=90,vjust =2),
+            axis.title.x = element_text(vjust = -0.2),
+            axis.text = element_text(), 
+            axis.line = element_line(colour=&quot;black&quot;),
+            axis.ticks = element_line(),
+            panel.grid.major = element_line(colour=&quot;#f0f0f0&quot;),
+            panel.grid.minor = element_blank(),
+            legend.key = element_rect(colour = NA),
+            legend.position = &quot;bottom&quot;,
+            legend.direction = &quot;horizontal&quot;,
+            legend.key.size= unit(0.2, &quot;cm&quot;),
+            legend.margin = unit(0, &quot;cm&quot;),
+            legend.title = element_text(face=&quot;italic&quot;),
+            plot.margin=unit(c(10,5,5,5),&quot;mm&quot;),
+            strip.background=element_rect(colour=&quot;#f0f0f0&quot;,fill=&quot;#f0f0f0&quot;),
+            strip.text = element_text(face=&quot;bold&quot;)
+    ))
+  
+}
+
+pd &lt;- position_dodge(0.1)
+
+{
+friendly_pals &lt;- list(
+  bright_seven = c(&quot;#4477AA&quot;, &quot;#228833&quot;, &quot;#AA3377&quot;, &quot;#BBBBBB&quot;, &quot;#66CCEE&quot;, &quot;#CCBB44&quot;, &quot;#EE6677&quot;),
+  contrast_three = c(&quot;#004488&quot;, &quot;#BB5566&quot;, &quot;#DDAA33&quot;),
+  vibrant_seven = c(&quot;#0077BB&quot;, &quot;#EE7733&quot;, &quot;#33BBEE&quot;, &quot;#CC3311&quot;, &quot;#009988&quot;, &quot;#EE3377&quot;, &quot;#BBBBBB&quot;),
+  muted_nine = c(&quot;#332288&quot;, &quot;#117733&quot;, &quot;#CC6677&quot;, &quot;#88CCEE&quot;, &quot;#999933&quot;, &quot;#882255&quot;, &quot;#44AA99&quot;, &quot;#DDCC77&quot;, &quot;#AA4499&quot;),
+  nickel_five = c(&quot;#648FFF&quot;, &quot;#FE6100&quot;, &quot;#785EF0&quot;, &quot;#FFB000&quot;, &quot;#DC267F&quot;),
+  ito_seven = c(&quot;#0072B2&quot;, &quot;#D55E00&quot;, &quot;#009E73&quot;, &quot;#CC79A7&quot;, &quot;#56B4E9&quot;, &quot;#E69F00&quot;, &quot;#F0E442&quot;)
+)
+}
+
+contrast_three = c(&quot;#004488&quot;, &quot;#BB5566&quot;, &quot;#DDAA33&quot;)</code></pre>
+</div>
+<div id="pair-plot" class="section level3">
+<h3>Pair Plot</h3>
+<ul>
+<li>Geom point</li>
+<li>Geom line with different color</li>
+</ul>
+<pre class="r"><code>Fig1&lt;- read.delim(&quot;~/Repository/repository/docs/M21B/M21B Fig 1BC.csv&quot;)
+head(Fig1)</code></pre>
+<pre><code>##   Patient   Value Tissue Methyltransferase
+## 1     132 2.32865    NAT           METTL18
+## 2     133 2.08113    NAT           METTL18
+## 3     134 1.94116    NAT           METTL18
+## 4     135 2.16355    NAT           METTL18
+## 5     136 2.03273    NAT           METTL18
+## 6     138 2.29202    NAT           METTL18</code></pre>
+<pre class="r"><code>Fig1&lt;-Fig1 %&gt;% 
+  filter(Methyltransferase==&#39;METTL21A&#39;|Methyltransferase==&#39;METTL21B&#39;|Methyltransferase==&#39;METTL21C&#39;|Methyltransferase==&#39;METTL21D&#39;) 
+
+Fig1&lt;-Fig1 %&gt;% 
+  select(Value,Tissue,Patient,Methyltransferase) %&gt;% 
+  spread(Tissue, Value) %&gt;% 
+  mutate(is_increasing=Tumor&gt;NAT) %&gt;% 
+  gather(&quot;Tissue&quot;,&quot;Va&quot;,3:4)
+
+b&lt;-ggplot(Fig1,aes(x=Tissue,y=Va))+
+  geom_point(alpha=0.2,size=1.5)+
+  geom_line(aes(group = Patient, col = is_increasing),alpha=0.2,show.legend = NULL,size=0.7)+
+  labs(y=element_blank(),x=element_blank())+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        aspect.ratio = 1,
+        panel.spacing = unit(1.5,&#39;cm&#39;))+
+  facet_grid(~Methyltransferase,labeller=label_wrap_gen(width=16))
+
+c&lt;-b+theme_Publication()+
+  scale_fill_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+  scale_color_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+  scale_y_continuous(expand=expand_scale(mult = c(0.1,0.2)))+
+  ylab(&#39;Expression level (RU)&#39;)+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        strip.text.x = element_text(size = 12, face=&quot;bold&quot;,family=&quot;Arial&quot;,colour=&quot;#f0f0f0&quot;))
+c</code></pre>
+<p><img src="METTL21B_files/figure-html/3-1.png" width="672" /></p>
+</div>
+<div id="bar-graph-stacking" class="section level3">
+<h3>Bar graph stacking</h3>
+<ul>
+<li>Calculate persentage downregulated and upregulated</li>
+</ul>
+<pre class="r"><code>#count upregulated and downregulated
+upre&lt;-Fig1 %&gt;% 
+  filter(is_increasing %in% TRUE) %&gt;% 
+  group_by(Methyltransferase) %&gt;% tally()
+
+downre&lt;-Fig1 %&gt;% 
+  filter(is_increasing %in% FALSE) %&gt;% 
+  group_by(Methyltransferase) %&gt;% tally()
+
+#make dataframe 
+dupre&lt;-data.frame(upre)
+dupre&lt;-dupre %&gt;% 
+  mutate(&quot;Regulation&quot;=&quot;Up-regulated&quot;)
+
+ddown&lt;-data.frame(downre)
+ddown&lt;-ddown %&gt;% 
+  mutate(&quot;Regulation&quot;=&quot;Down-regulated&quot;)
+
+
+#merge dataframe into one --&gt; add as additional row
+mergebind &lt;- rbind(dupre, ddown)
+mergebind</code></pre>
+<pre><code>##   Methyltransferase   n     Regulation
+## 1          METTL21A 158   Up-regulated
+## 2          METTL21B  52   Up-regulated
+## 3          METTL21C 112   Up-regulated
+## 4          METTL21D 130   Up-regulated
+## 5          METTL21A  38 Down-regulated
+## 6          METTL21B 144 Down-regulated
+## 7          METTL21C  84 Down-regulated
+## 8          METTL21D  66 Down-regulated</code></pre>
+<pre class="r"><code>#make column persentage
+mergepersentage &lt;- mergebind %&gt;% 
+  group_by(Methyltransferase) %&gt;% 
+  mutate(pct=prop.table(n))
+mergepersentage</code></pre>
+<pre><code>## # A tibble: 8 × 4
+## # Groups:   Methyltransferase [4]
+##   Methyltransferase     n Regulation       pct
+##   &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;          &lt;dbl&gt;
+## 1 METTL21A            158 Up-regulated   0.806
+## 2 METTL21B             52 Up-regulated   0.265
+## 3 METTL21C            112 Up-regulated   0.571
+## 4 METTL21D            130 Up-regulated   0.663
+## 5 METTL21A             38 Down-regulated 0.194
+## 6 METTL21B            144 Down-regulated 0.735
+## 7 METTL21C             84 Down-regulated 0.429
+## 8 METTL21D             66 Down-regulated 0.337</code></pre>
+<ul>
+<li>Plotting</li>
+</ul>
+<pre class="r"><code>level_order &lt;- c(&#39;METTL21A&#39;, &#39;METTL21D&#39;,&#39;METTL21C&#39;,&#39;METTL21B&#39;)
+level_order2&lt;-c(&#39;Down-regulated&#39;,&#39;Up-regulated&#39;)
+a&lt;-mergepersentage %&gt;% 
+  ggplot(aes(x=factor(Methyltransferase,level=level_order),y=pct,fill=factor(Regulation,level=level_order2)))+
+  geom_col(position=position_stack(reverse = TRUE))+
+  geom_text(aes(label=scales::percent(pct)),vjust=+1.75,col=&quot;white&quot;,size=3.75,position = position_stack(reverse = TRUE))+
+  scale_y_continuous(labels = scales::percent)
+c&lt;-a+theme_Publication()+
+  scale_fill_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+  scale_color_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+  ylab(&#39;Relative case number \n (compared to NAT)&#39;)+
+  theme(legend.position = &#39;top&#39;,
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x=element_text(angle = 45,vjust=1,hjust=1),
+        axis.text = element_text(family = &#39;Arial&#39;),
+        aspect.ratio = 1)
+c  </code></pre>
+<p><img src="METTL21B_files/figure-html/5-1.png" width="672" /></p>
+</div>
+<div id="bar-graph-with-hline" class="section level3">
+<h3>Bar graph with hline</h3>
+<pre class="r"><code>######Figure 1F#####
+Fig1F&lt;-read.delim(&quot;~/Repository/repository/docs/M21B/M21B Fig 1F.csv&quot;)
+head(Fig1F)</code></pre>
+<pre><code>##     Cell   Average Group.c
+## 1 HFE145 1.0000000       a
+## 2  MKN45 3.3672878       b
+## 3 SNU484 1.4868779       b
+## 4 SNU601 0.1183837       c
+## 5 SNU668 0.1385055       c
+## 6  MKN74 0.1838185       c</code></pre>
+<pre class="r"><code>level_ordercell&lt;-c(&#39;HFE145&#39;,&#39;MKN45&#39;,&#39;SNU484&#39;,&#39;SNU601&#39;,&#39;SNU668&#39;,&#39;MKN74&#39;,&#39;SNU719&#39;,&#39;MKN1&#39;)
+  
+
+a&lt;-Fig1F %&gt;% 
+  ggplot(aes(x=factor(Cell,levels = level_ordercell),y=Average,fill=factor(Group.c)))+
+  geom_bar(stat=&quot;identity&quot;,color=&#39;black&#39;)+
+  geom_hline(aes(yintercept=1), color=friendly_pal(&quot;ito_seven&quot;)[3], linetype=&quot;dashed&quot;,size=.8)
+a</code></pre>
+<p><img src="METTL21B_files/figure-html/6-1.png" width="672" /></p>
+<pre class="r"><code>a+theme_Publication()+
+  scale_fill_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+  scale_color_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+  scale_y_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.text.x = element_text(angle = 90,vjust = 1,hjust = 1),
+        axis.title.y = element_blank(),
+        legend.position = &#39;none&#39;,
+        axis.title.x = element_blank(),
+        aspect.ratio = 1)</code></pre>
+<p><img src="METTL21B_files/figure-html/6-2.png" width="672" /></p>
+</div>
+<div id="bar-graph-with-errorbar" class="section level3">
+<h3>Bar graph with errorbar</h3>
+<pre class="r"><code>Fig2A&lt;-read.delim(&quot;~/Repository/repository/docs/M21B/M21B Fig 2A.csv&quot;,sep = &#39;\t&#39;)
+head(Fig2A)</code></pre>
+<pre><code>##            Group     Value
+## 1       Scramble 104.89210
+## 2       Scramble 100.14390
+## 3       Scramble  94.96403
+## 4 shEEF1AKMT3 #1 295.68350
+## 5 shEEF1AKMT3 #1 362.15830
+## 6 shEEF1AKMT3 #1 326.76260</code></pre>
+<pre class="r"><code>{
+  df&lt;-Fig2A
+df.summary&lt;-df %&gt;% 
+  group_by(Group) %&gt;% 
+  summarise(
+    sd=sd(`Value`,na.rm = TRUE),
+    Mean=mean(`Value`)
+  )
+
+df.summary
+df  
+
+a&lt;-ggplot(df.summary,aes(fill=Group))+
+  geom_bar(aes(x=Group,y=Mean),stat = &#39;identity&#39;,color=&#39;black&#39;)+
+  geom_jitter(data=df,aes(x=Group,y=Value),position=position_jitter(.2),color=&#39;black&#39;)+
+  geom_errorbar(aes(x=Group, y=Mean, ymin=Mean-sd,ymax=Mean+sd),width=.25)
+a+theme_Publication()+
+  scale_fill_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+  scale_color_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+  scale_y_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        axis.title.y = element_blank(),
+        legend.position = &#39;none&#39;,
+        axis.title.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.75)
+}</code></pre>
+<p><img src="METTL21B_files/figure-html/7-1.png" width="672" /></p>
+</div>
+<div id="bar-graph-multiple" class="section level3">
+<h3>Bar graph (multiple)</h3>
+<pre class="r"><code>Fig5H&lt;-read.delim(&quot;~/Repository/repository/docs/M21B/M21B Fig 5H.csv&quot;,sep = &#39;\t&#39;)
+
+head(Fig5H)</code></pre>
+<pre><code>##                 Phospho         Group    Value
+## 1    TP53 (Phospho-T18) Myc-MAP2K7 WT 2.199384
+## 2    TP53 (Phospho-S37) Myc-MAP2K7 WT 1.403808
+## 3    TP53 (Phospho-S46) Myc-MAP2K7 WT 1.376446
+## 4  CHEK2 (Phospho-T387) Myc-MAP2K7 WT 1.611975
+## 5   ESR1 (Phospho-S118) Myc-MAP2K7 WT 1.541289
+## 6 PRKDC (Phospho-T2647) Myc-MAP2K7 WT 1.479140</code></pre>
+<pre class="r"><code>bw&lt;-Fig5H
+bw$Group &lt;- factor(bw$Group, levels = c(&quot;Myc-MAP2K7 WT&quot;, &quot;Myc-MAP2K7 K296R&quot;))
+bw$Phospho &lt;- factor(bw$Phospho, levels = c(&#39;TP53 (Phospho-T18)&#39;,
+                                            &#39;TP53 (Phospho-S37)&#39;,
+                                            &#39;TP53 (Phospho-S46)&#39;,
+                                            &#39;CHEK2 (Phospho-T387)&#39;,
+                                            &#39;ESR1 (Phospho-S118)&#39;,
+                                            &#39;PRKDC (Phospho-T2647)&#39;,
+                                            &#39;PLCB3 (Phospho-S537)&#39;,
+                                            &#39;MARCKS (Phospho-S158)&#39;))
+
+dodge&lt;-position_dodge(width=.75)
+a&lt;-ggplot(bw,aes(x=`Phospho`,y=`Value`))+ 
+  geom_bar(stat=&quot;identity&quot;, 
+           position=position_dodge(), size=.6,aes(fill=`Group`),color=&#39;black&#39;)+
+  geom_hline(aes(yintercept=1),linetype=&#39;dotted&#39;,color=c(friendly_pal(&quot;contrast_three&quot;)[2]),size=1.2)
+a+theme_Publication()+
+  scale_fill_manual(values = c(&#39;#E8E9F3&#39;,friendly_pal(&quot;contrast_three&quot;)))+
+  scale_color_manual(values = c(&#39;#E8E9F3&#39;,friendly_pal(&quot;contrast_three&quot;)))+
+  scale_y_continuous(expand=expand_scale(mult = c(0,0.25)),breaks=(seq(0,2.5,0.5)))+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        axis.title.y = element_blank(),
+        legend.position = &#39;top&#39;,
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = .7)</code></pre>
+<p><img src="METTL21B_files/figure-html/8-1.png" width="672" /></p>
+</div>
+<div id="point-3-variable" class="section level3">
+<h3>Point 3 variable</h3>
+<pre class="r"><code>Fig6B&lt;-read.delim(&#39;~/Repository/repository/docs/M21B/M21B Fig 6B.csv&#39;, sep=&#39;\t&#39;)
+head(Fig6B)</code></pre>
+<pre><code>##                   y          x pvalue    r2value pvalue.converted pval
+## 1 Mettl21B &amp; p-MKK7        All 0.0099 0.05244100            0.010    b
+## 2      p-MKK7 &amp; p53        All 0.0306 0.03936256            0.050    c
+## 3 Mettl21B &amp; p-MKK7 Metastasis 0.0050 0.27457600            0.010    b
+## 4      p-MKK7 &amp; p53 Metastasis 0.0056 0.26853124            0.010    b
+## 5 Mettl21B &amp; p-MKK7 Recurrence 0.0001 0.59629284            0.001    a
+## 6      p-MKK7 &amp; p53 Recurrence 0.0800 0.08271376            0.500    d</code></pre>
+<pre class="r"><code>bw$Phospho &lt;- factor(bw$Phospho, levels = c(&#39;TP53 (Phospho-T18)&#39;,
+                                            &#39;TP53 (Phospho-S37)&#39;,
+                                            &#39;TP53 (Phospho-S46)&#39;,
+                                            &#39;CHEK2 (Phospho-T387)&#39;,
+                                            &#39;ESR1 (Phospho-S118)&#39;,
+                                            &#39;PRKDC (Phospho-T2647)&#39;,
+                                            &#39;PLCB3 (Phospho-S537)&#39;,
+                                            &#39;MARCKS (Phospho-S158)&#39;))
+Fig6B$x &lt;- factor(Fig6B$x, levels=c(&quot;All&quot;,&quot;Metastasis&quot;,&quot;Recurrence&quot;,&quot;T1&amp;T2&quot;,&quot;T3&amp;T4&quot;,&quot;Lymphovascular invasion&quot;,&quot;Neural invasion&quot;,&quot;Intestinal&quot;,&quot;Diffuse&quot;,&quot;Signet ring&quot;))
+Fig6B$y &lt;- factor(Fig6B$y,levels=c(&quot;p-MKK7 &amp; p53&quot;,&quot;Mettl21B &amp; p-MKK7&quot;))
+
+Fig6B %&gt;% 
+  ggplot(aes(x,y))+
+  geom_point(aes(colour=pval,size=r2value))+
+  theme_Publication()+
+  scale_size_continuous(limits=c(0,1),breaks=c(1,0.75,0.5,0.25,0))+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
+        axis.title.y = element_blank(),
+        legend.position = &#39;top&#39;,
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y = element_blank(),
+        aspect.ratio = .25)+
+  scale_fill_viridis_d()+
+  scale_color_viridis_d()</code></pre>
+<p><img src="METTL21B_files/figure-html/9-1.png" width="672" /></p>
+</div>
+<div id="point-with-correlation" class="section level3">
+<h3>Point with correlation</h3>
+<pre class="r"><code>corre&lt;-read.delim(&#39;~/Repository/repository/docs/M21B/correlation.csv&#39;, sep=&#39;\t&#39;)
+library(scales)
+corre %&gt;% 
+  ggplot(aes(x=`METTL21B`,y=`p.MKK7`))+
+  theme_bw()+
+  scale_y_log10(
+    breaks = trans_breaks(&quot;log10&quot;, function(x) 10^x),
+    labels = trans_format(&quot;log10&quot;, math_format(10^.x)))+
+  scale_x_log10(
+    breaks = trans_breaks(&quot;log10&quot;, function(x) 10^x),
+    labels = trans_format(&quot;log10&quot;, math_format(10^.x)))+
+  geom_point()+
+  geom_smooth(method=lm, fullrange=FALSE,se=TRUE)+
+  theme(axis.text=element_text(size=10,family = &quot;Arial&quot;,color = &quot;black&quot;))+
+  theme(text=element_text(size=11,family = &quot;Arial&quot;))+
+  theme(aspect.ratio = 1)+
+  theme(axis.title.x = element_text(vjust=-2),axis.title.y = element_text(vjust=+2))+
+  labs(x=paste0(&quot;METTL21B protein level&quot;, &quot;\n&quot;, &quot;(compared to paired NAT)&quot;))+
+  theme(strip.text.x = element_text(size = 10, face=&quot;bold&quot;,family=&quot;Arial&quot;))+
+  labs(y = paste0(&quot;p-MKK7 protein level&quot;, &quot;\n&quot;, &quot;(compared to paired NAT)&quot;))</code></pre>
+<p><img src="METTL21B_files/figure-html/10,%20-1.png" width="672" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
