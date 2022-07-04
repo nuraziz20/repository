@@ -1,3 +1,21 @@
+/* NAVBAR */
+.navbar, .container {
+  background-color: #900C3F;
+}
+
+.navbar-brand {
+  font-size: 2em;
+  text-transform: uppercase;
+  /*margin-left: 10% !important;*/
+  width: 300px;
+  padding: 14px 10px;
+}
+
+.navbar-right {
+  /*margin-right: 10% !important;*/
+}
+
+
 body {
   margin-top: 2em;
   /*font-family: "Latin Modern Roman", "Book Antiqua", Palatino, serif*/
@@ -7,18 +25,7 @@ body {
   --root-font-size: 1.1em;
 }
 
-/* remove decoration on info-box */
-.info-box a {
-  color: black;
-  text-decoration: none;
-}
-.info-box td {
-  margin-bottom: 0;
-  padding-top: 0 !important;
-}
-.info-box {
-  padding: 5px 5px 0px 5px !important;
-}
+
 
 
 p, li {

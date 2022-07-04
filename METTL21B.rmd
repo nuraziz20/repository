@@ -1,11 +1,9 @@
 ---
-title: "Plotting with ggplot -case study METTL21B paper"
-author: "Nur Aziz"
+title: "Plotting (EEF1AKMT3 paper example)"
+author: "Created by : Nur Aziz"
 output:
   html_document:
-
     css:
-    - css/make-cv-like-other.css
     - css/one-column-cv.css
     - css/website-page.css
     - css/style.css
@@ -14,9 +12,10 @@ output:
     toc_float: true
 
 ---
+
 ### Note
 * Here I documented the codes I used to make graph/figuring for EEF1AKMT3 paper published in [Cancer Letters](https://doi.org/10.1016/j.canlet.2022.215803).
-* Unfortunately, the graph did not look so good on the published one because it was compressed by Ms. Word. 
+* Unfortunately, the graph did not look so good on the published one because it was compressed in Ms. Word. 
 * These are the codes just for figuring. Data analysis was both performed in Ms. Excel and R. Don't get confused.
 
 ### Packages and libraries

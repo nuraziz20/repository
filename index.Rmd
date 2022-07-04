@@ -5,10 +5,10 @@ output:
     toc: yes
   html_document:
     css:
-    - css/make-cv-like-other.css
+    - css/make-cv-like-other.css #this contain header setting and title configuration
     - css/one-column-cv.css
-    - css/website-page.css
-    - css/style.css
+    - css/website-page.css #icon department location etc
+    - css/style.css #font summary in here
     - https://use.fontawesome.com/releases/v5.7.2/css/all.css
     toc: yes
     toc_float: yes
@@ -42,7 +42,6 @@ cv_entries <- read_csv("_content/cv_entries.csv") %>%
 
 <br>
 
-
 # Summary
 
 I am passionate about molecular biology research, particularly in **cancer biology** and **innate immunity**. 
@@ -52,33 +51,22 @@ My **academic background** mainly focused on understanding the molecular complex
 I am currently searching for a **postdoctoral** position.
 Download a brief version of [my CV as PDF](https://github.com/nuraziz20/repository/raw/main/docs/ResumeNurAziz2022.pdf).
 
-<br>
 
-:::: {style="display: flex;"}
-::: {}
+
 
 ![](img/home1.jpg)
 
-:::
-::: {}
 ```{block type='col-6', echo=TRUE}
 
-<div class="info-box">
 
-| Center | Left |
-|-:|-:|
-| <i class="fas fa-map-marker-alt"></i>|Department of Integrative Biotechnology,\
-Sungkyunkwan University, South Korea|
-| <i class="fas fa-envelope"></i> | nuraziz\@skku.edu |
-| <i class="fas fa-globe"></i> | [www.nuraziz.site](https://nuraziz.site) |
-| <i class="fab fa-github"></i> | [nuraziz20](https://github.com/nuraziz20) |
- 
-</div>
+| <i class="fas fa-map-marker-alt"></i> Department of Integrative Biotechnology,\ Sungkyunkwan University, South Korea 
+| <i class="fas fa-envelope"></i>  nuraziz\@skku.edu 
+| <i class="fas fa-globe"></i>  [www.nuraziz.site](https://nuraziz.site) 
+| <i class="fab fa-github"></i>  [nuraziz20](https://github.com/nuraziz20) 
+
 
 ```
-:::
-::::
-
+<br>
 
 
 
