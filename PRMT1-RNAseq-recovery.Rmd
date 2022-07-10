@@ -21,14 +21,14 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Principle
+# Principle
 
 ![](docs/PRMT1/Slide1.JPG)
 ![](docs/PRMT1/Slide2.JPG)
 ![](docs/PRMT1/Slide3.JPG)
 ![](docs/PRMT1/Slide4.JPG)
 
-## Preparation
+# Preparation
 * Install and load libraries
 ```{r 1, echo=TRUE, message=FALSE, warning=FALSE}
 library(kableExtra)
@@ -77,10 +77,18 @@ theme_Publication <- function(base_size=14, base_family="helvetica") {
     ))
 }
 
+create_dt<-function(x){
+  DT::datatable(x,
+                extensions = 'Buttons',
+                options = list(dom='Blfrtip',
+                               buttons=c('copy', 'csv', 'excel','pdf', 'print'),
+                               lengthMenu=list(c(10,25,50,-1),
+                                               c(10,25,50,'All'))))
+}
 ```
 <br>
 
-## Load RNAseq results
+# Load RNAseq results
 * Note that .. indicate / from excel, so that is fold change (FC) value.
 ```{r 2, echo=TRUE}
 fc<-read.delim("~/Repository/repository/docs/PRMT1/FC PRMT.csv") #load dataframe and name it fc
@@ -101,7 +109,7 @@ colnames(fc)[8]<-"shPRMT1plusPRMT1"} #change the column name
 ```
 <br>
 
-## Threshold filtering (DEGs)
+# Threshold filtering (DEGs)
 * Differentially expressed genes (DEGs) commonly selected after threshold filtering using both log FC value and p-value. 
 * But since there is no replication in the sample, we can filter DEGs based on log FC value.
 
@@ -117,11 +125,11 @@ fc<-fc %>%
                            FC.shPRMT1plusPRMT1.per.shPRMT1 < 0.5 ~ 'Downregulated',
                           TRUE ~ 'Not-regulated'))
 
-DT::datatable(fc)
+create_dt(fc)
 
 
 ```
-### Scatter plot
+## Scatter plot
 ```{r scatter1, echo=TRUE, message=FALSE, warning=FALSE}
 # SH vs Scramble
 fc %>% 
@@ -179,7 +187,7 @@ fc %>%
 
 <br>
 
-## Assigning genes
+# Assigning genes
 <br>
 * Make a venn diagram to see overlapping DEGs in 3 conditions.
 
@@ -218,24 +226,26 @@ overlap<-overlap %>%
   left_join(fc) %>% 
   select(Gene,grupSH,grupSI,grupREC)
 
-DT::datatable(overlap)
+create_dt(overlap)
 
 ```
 
-### Final filtering Positive/Negative
+# Scenario 1 (Ideal)
+
+## Final filtering Positive/Negative
 
 <br>
 
-#### Positively regulated by PRMT1
+### Positively regulated by PRMT1
 ```{r final, echo=TRUE, message=FALSE, warning=FALSE}
 Positive.cor<-(overlap %>% filter(grupSH == 'Downregulated' & grupSI == 'Downregulated' & grupREC == 'Upregulated'))
-DT::datatable(Positive.cor)
+create_dt(Positive.cor)
 ```
 <br>
 
-#### Negatively regulated by PRMT1
+### Negatively regulated by PRMT1
 ```{r final2, echo=TRUE, message=FALSE, warning=FALSE}
 
 Negative.cor<-(overlap %>% filter(grupSH == 'Upregulated' & grupSI == 'Upregulated' & grupREC == 'Downregulated'))
-DT::datatable(Negative.cor)
+create_dt(Negative.cor)
 ```
