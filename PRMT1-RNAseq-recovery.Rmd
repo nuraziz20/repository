@@ -119,10 +119,6 @@ fc<-fc %>%
 
 DT::datatable(fc)
 
-#Confirm by looking at PRMT1
-fc %>% 
-  filter(Gene == 'PRMT1') %>% 
-  select(Gene,grupSH,grupSI,grupREC)
 
 ```
 ### Scatter plot
@@ -141,6 +137,85 @@ fc %>%
   theme_Publication()+
   theme(aspect.ratio = 1)+
   ylab("sh-PRMT1")+
-  xlab("Scramble")
+  xlab("Scramble")+
+  ggtitle("Group SH")
+
+fc %>% 
+  ggplot(aes(x=Scramble,y=siPRMT1,color=grupSI))+
+  geom_point(size=1.5)+
+  geom_label_repel(aes(label=ifelse(Gene == 'PRMT1',as.character(Gene),'')),
+                  box.padding   = .35, 
+                  point.padding = 0.5,
+                  max.overlaps = Inf,
+                  segment.color = 'grey50',show.legend = F)+ #label PRMT1
+  theme_classic()+
+  scale_colour_manual(values = c('#a6cee3','gray','#fb9a99'))+
+  theme_Publication()+
+  theme(aspect.ratio = 1)+
+    ylab("si-PRMT1")+
+  xlab("Scramble")+
+  ggtitle("Group SI")
+
+fc %>% 
+  ggplot(aes(x=shPRMT1,y=shPRMT1plusPRMT1,color=grupREC))+
+  geom_point(size=1.5)+
+  geom_label_repel(aes(label=ifelse(Gene == 'PRMT1',as.character(Gene),'')),
+                  box.padding   = .35, 
+                  point.padding = 0.5,
+                  max.overlaps = Inf,
+                  segment.color = 'grey50',show.legend = F)+ #label PRMT1
+  theme_classic()+
+  scale_colour_manual(values = c('#a6cee3','gray','#fb9a99'))+
+  theme_Publication()+
+  theme(aspect.ratio = 1)+
+  ylab("sh-PRMT1 + Flag-PRMT1")+
+  xlab("sh-PRMT1")+
+  ggtitle("Group Recovery")
+
+
+
+```
+
+
+<br>
+
+## Assigning genes
+<br>
+* Make a venn diagram to see overlapping DEGs in 3 conditions.
+
+```{r venn, echo=TRUE, message=FALSE, warning=FALSE}
+
+#Filtered regulated genes to make venn
+SH.regulated<-fc %>% 
+  filter(grupSH == 'Downregulated' | grupSH == 'Upregulated')
+SI.regulated<-fc %>% 
+  filter(grupSI == 'Downregulated' | grupSH == 'Upregulated')
+REC.regulated<-fc %>% 
+  filter(grupREC == 'Downregulated' | grupSH == 'Upregulated')
+
+
+D<-list('Group SH'=as.character(SH.regulated$Gene),
+        'Group SI'=as.character(SI.regulated$Gene),
+        'Group Recovery'=as.character(REC.regulated$Gene))
+
+ggvenn(D,fill_color = c("#386cb0","#fdb462","gray"),fill_alpha = .3,text_size = 5,show_percentage = F)
+
+
+```
+<br>
+* From venn we can see about 871 DEGs overlap, then we filter again and assign positive or negatively regulated by PRMT1
+<br>
+```{r over, echo=TRUE, message=FALSE, warning=FALSE}
+#what are those genes?
+overlap<-as.data.frame(intersect(as.character(REC.regulated$Gene),intersect(x=as.character(SH.regulated$Gene),y=as.character(SI.regulated$Gene))))
+colnames(overlap)[1]<-"Gene"
+overlap
+
+#leftjoin to other parameter
+overlap<-overlap %>% 
+  left_join(fc) %>% 
+  select(Gene,grupSH,grupSI,grupREC)
+
+DT::datatable(overlap)
 
 ```
