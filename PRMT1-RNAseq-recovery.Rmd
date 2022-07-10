@@ -23,7 +23,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Principle
 
-![](docs/PRMT1/Slide1.JPG)
+ Sample types :
+
+* Scramble
+* siPRMT1
+* shPRMT1
+* shPRMT1 + Flag-PRMT1
+
 ![](docs/PRMT1/Slide2.JPG)
 ![](docs/PRMT1/Slide3.JPG)
 ![](docs/PRMT1/Slide4.JPG)
@@ -89,7 +95,7 @@ create_dt<-function(x){
 <br>
 
 # Load RNAseq results
-* Note that .. indicate / from excel, so that is fold change (FC) value.
+
 ```{r 2, echo=TRUE}
 fc<-read.delim("~/Repository/repository/docs/PRMT1/FC PRMT.csv") #load dataframe and name it fc
 head(fc)
@@ -195,7 +201,7 @@ fc %>%
 
 ```{r venn, echo=TRUE, message=FALSE, warning=FALSE}
 
-#Filtered regulated genes to make venn
+# Filtered regulated genes to make venn
 SH.regulated<-fc %>% 
   filter(grupSH == 'Downregulated' | grupSH == 'Upregulated')
 SI.regulated<-fc %>% 
@@ -203,17 +209,15 @@ SI.regulated<-fc %>%
 REC.regulated<-fc %>% 
   filter(grupREC == 'Downregulated' | grupREC == 'Upregulated')
 
-
 D<-list('Group SH'=as.character(SH.regulated$Gene),
         'Group SI'=as.character(SI.regulated$Gene),
         'Group Recovery'=as.character(REC.regulated$Gene))
 
 ggvenn(D,fill_color = c("#386cb0","#fdb462","gray"),fill_alpha = .3,text_size = 5,show_percentage = F)
 
-
 ```
 <br>
-* From venn we can see about 131 DEGs overlap, then we filter again and assign positive or negatively regulated by PRMT1
+* From venn we can see about 119 DEGs overlap, then we filter again and assign positive or negatively regulated by PRMT1
 <br>
 ```{r over, echo=TRUE, message=FALSE, warning=FALSE}
 #what are those genes?
@@ -232,20 +236,99 @@ create_dt(overlap)
 
 # Scenario 1 (Ideal)
 
-## Final filtering Positive/Negative
+## Positively regulated by PRMT1
+### Make venn only positive
+```{r S1pos, echo=TRUE, message=FALSE, warning=FALSE}
+# We can make venn again only positive
+pos.SH<-SH.regulated %>% 
+  filter(grupSH=='Downregulated')
+pos.SI<-SI.regulated %>% 
+  filter(grupSI=='Downregulated')
+pos.REC<-REC.regulated %>% 
+  filter(grupREC=='Upregulated')
 
-<br>
+s1.list.pos<-list('Group SH'=as.character(pos.SH$Gene),
+                   'Group SI'=as.character(pos.SI$Gene),
+                   'Group Recovery'=as.character(pos.REC$Gene))
 
-### Positively regulated by PRMT1
-```{r final, echo=TRUE, message=FALSE, warning=FALSE}
-Positive.cor<-(overlap %>% filter(grupSH == 'Downregulated' & grupSI == 'Downregulated' & grupREC == 'Upregulated'))
-create_dt(Positive.cor)
+ggvenn(s1.list.pos,fill_color = c("#386cb0","#fdb462","gray"),fill_alpha = .3,text_size = 5,show_percentage = F)
 ```
 <br>
 
-### Negatively regulated by PRMT1
-```{r final2, echo=TRUE, message=FALSE, warning=FALSE}
+### Datatable overlap positive
+```{r dat pos, echo=TRUE, message=FALSE, warning=FALSE}
+S1.Positive.cor<-(overlap %>% filter(grupSH == 'Downregulated' & grupSI == 'Downregulated' & grupREC == 'Upregulated'))
+create_dt(S1.Positive.cor)
+```
+<br>
 
-Negative.cor<-(overlap %>% filter(grupSH == 'Upregulated' & grupSI == 'Upregulated' & grupREC == 'Downregulated'))
-create_dt(Negative.cor)
+### Enrichment analysis
+```{r enrich1, echo=TRUE, message=FALSE, warning=FALSE}
+library(enrichR)
+setEnrichrSite("Enrichr") # Human genes
+websiteLive <- TRUE
+dbs <- listEnrichrDbs()
+if (is.null(dbs)) websiteLive <- FALSE
+if (websiteLive) head(dbs)
+
+dbs <- c("GO_Molecular_Function_2021", "GO_Cellular_Component_2021", "GO_Biological_Process_2021","MSigDB_Hallmark_2020","KEGG_2021_Human")
+if (websiteLive) {
+    enriched <- enrichr(c(S1.Positive.cor$Gene), dbs)
+}
+
+
+kegg<-if (websiteLive) enriched[["KEGG_2021_Human"]]
+create_dt(kegg)
+
+msig<-if (websiteLive) enriched[["MSigDB_Hallmark_2020"]]
+create_dt(msig)
+
+```
+## Negatively regulated by PRMT1
+### Make venn only negative
+```{r S1neg, echo=TRUE, message=FALSE, warning=FALSE}
+# We can make venn again only negative
+pos.SH<-SH.regulated %>% 
+  filter(grupSH=='Upregulated')
+pos.SI<-SI.regulated %>% 
+  filter(grupSI=='Upregulated')
+pos.REC<-REC.regulated %>% 
+  filter(grupREC=='Downregulated')
+
+s1.list.neg<-list('Group SH'=as.character(pos.SH$Gene),
+                   'Group SI'=as.character(pos.SI$Gene),
+                   'Group Recovery'=as.character(pos.REC$Gene))
+
+ggvenn(s1.list.neg,fill_color = c("#386cb0","#fdb462","gray"),fill_alpha = .3,text_size = 5,show_percentage = F)
+```
+<br>
+
+### Datatable overlap negative
+```{r dat neg, echo=TRUE, message=FALSE, warning=FALSE}
+S1.Negative.cor<-(overlap %>% filter(grupSH == 'Upregulated' & grupSI == 'Upregulated' & grupREC == 'Downregulated'))
+create_dt(S1.Negative.cor)
+```
+<br>
+
+### Enrichment analysis
+```{r enrich2, echo=TRUE, message=FALSE, warning=FALSE}
+library(enrichR)
+setEnrichrSite("Enrichr") # Human genes
+websiteLive <- TRUE
+dbs <- listEnrichrDbs()
+if (is.null(dbs)) websiteLive <- FALSE
+if (websiteLive) head(dbs)
+
+dbs <- c("GO_Molecular_Function_2021", "GO_Cellular_Component_2021", "GO_Biological_Process_2021","MSigDB_Hallmark_2020","KEGG_2021_Human")
+if (websiteLive) {
+    enriched <- enrichr(c(S1.Negative.cor$Gene), dbs)
+}
+
+
+kegg<-if (websiteLive) enriched[["KEGG_2021_Human"]]
+create_dt(kegg)
+
+msig<-if (websiteLive) enriched[["MSigDB_Hallmark_2020"]]
+create_dt(msig)
+
 ```
