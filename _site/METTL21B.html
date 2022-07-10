@@ -369,7 +369,7 @@ Letters</a>.</li>
 <li>Unfortunately, the graph did not look so good on the published one
 because it was compressed in Ms. Word.</li>
 <li>These are the codes just for figuring. Data analysis was both
-performed in Ms. Excel and R. Don’t get confused.</li>
+performed in Ms. Excel and R. Don’t get confused. <br></li>
 </ul>
 </div>
 <div id="packages-and-libraries" class="section level3">
@@ -381,6 +381,7 @@ library(forcats)
 library(svglite)
 Sys.setenv(LANG=&#39;en&#39;)
 library(gridExtra)</code></pre>
+<p><br></p>
 </div>
 <div id="make-uniform-graph-format" class="section level3">
 <h3>Make uniform graph format</h3>
@@ -429,6 +430,7 @@ friendly_pals &lt;- list(
 }
 
 contrast_three = c(&quot;#004488&quot;, &quot;#BB5566&quot;, &quot;#DDAA33&quot;)</code></pre>
+<p><br></p>
 </div>
 <div id="pair-plot" class="section level3">
 <h3>Pair Plot</h3>
@@ -471,7 +473,7 @@ c&lt;-b+theme_Publication()+
   theme(axis.text.x = element_text(angle = 45,vjust = 1,hjust = 1),
         strip.text.x = element_text(size = 12, face=&quot;bold&quot;,family=&quot;Arial&quot;,colour=&quot;#f0f0f0&quot;))
 c</code></pre>
-<p><img src="METTL21B_files/figure-html/3-1.png" width="672" /></p>
+<p><img src="METTL21B_files/figure-html/3-1.png" width="672" /> <br></p>
 </div>
 <div id="bar-graph-stacking" class="section level3">
 <h3>Bar graph stacking</h3>
@@ -547,7 +549,7 @@ c&lt;-a+theme_Publication()+
         axis.text = element_text(family = &#39;Arial&#39;),
         aspect.ratio = 1)
 c  </code></pre>
-<p><img src="METTL21B_files/figure-html/5-1.png" width="672" /></p>
+<p><img src="METTL21B_files/figure-html/5-1.png" width="672" /> <br></p>
 </div>
 <div id="bar-graph-with-hline" class="section level3">
 <h3>Bar graph with hline</h3>
@@ -579,7 +581,7 @@ a</code></pre>
         legend.position = &#39;none&#39;,
         axis.title.x = element_blank(),
         aspect.ratio = 1)</code></pre>
-<p><img src="METTL21B_files/figure-html/6-2.png" width="672" /></p>
+<p><img src="METTL21B_files/figure-html/6-2.png" width="672" /> <br></p>
 </div>
 <div id="bar-graph-with-errorbar" class="section level3">
 <h3>Bar graph with errorbar</h3>
@@ -619,10 +621,10 @@ a+theme_Publication()+
         panel.grid.major.x = element_blank(),
         aspect.ratio = 1.75)
 }</code></pre>
-<p><img src="METTL21B_files/figure-html/7-1.png" width="672" /></p>
+<p><img src="METTL21B_files/figure-html/7-1.png" width="672" /> <br></p>
 </div>
-<div id="bar-graph-multiple" class="section level3">
-<h3>Bar graph (multiple)</h3>
+<div id="bar-graph-multiple-with-deviation" class="section level3">
+<h3>Bar graph (multiple) with deviation</h3>
 <pre class="r"><code>Fig5H&lt;-read.delim(&quot;~/Repository/repository/docs/M21B/M21B Fig 5H.csv&quot;,sep = &#39;\t&#39;)
 
 head(Fig5H)</code></pre>
@@ -661,6 +663,109 @@ a+theme_Publication()+
         panel.grid.major.x = element_blank(),
         aspect.ratio = .7)</code></pre>
 <p><img src="METTL21B_files/figure-html/8-1.png" width="672" /></p>
+<pre class="r"><code>Fig2F&lt;-read.delim(&quot;~/Repository/repository/docs/M21B/M21B Fig 2F.csv&quot;,sep = &#39;\t&#39;)
+head(Fig2F)</code></pre>
+<pre><code>##   Weeks     Group Value
+## 1     0 shControl 0.000
+## 2     0 shControl 0.000
+## 3     0 shControl 0.000
+## 4     0 shControl 0.000
+## 5     0 shControl 0.000
+## 6     2 shControl 1.805</code></pre>
+<pre class="r"><code>Fig2F&lt;-Fig2F %&gt;% 
+  
+  mutate(Group = case_when(Group == &#39;shControl&#39; ~ &#39;Scramble&#39;,
+                           Group == &#39;shM21B&#39; ~ &#39;shEEF1AKMT3 #1&#39;))
+head(Fig2F)</code></pre>
+<pre><code>##   Weeks    Group Value
+## 1     0 Scramble 0.000
+## 2     0 Scramble 0.000
+## 3     0 Scramble 0.000
+## 4     0 Scramble 0.000
+## 5     0 Scramble 0.000
+## 6     2 Scramble 1.805</code></pre>
+<pre class="r"><code>df&lt;-Fig2F
+df.summary&lt;-df %&gt;% 
+    group_by(Weeks,Group) %&gt;% 
+    summarise(
+      sd=sd(`Value`,na.rm = TRUE),
+      Mean=mean(`Value`)
+    )
+  
+df.summary</code></pre>
+<pre><code>## # A tibble: 8 × 4
+## # Groups:   Weeks [4]
+##   Weeks Group             sd  Mean
+##   &lt;int&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;
+## 1     0 Scramble       0     0    
+## 2     0 shEEF1AKMT3 #1 1.22  0.547
+## 3     2 Scramble       1.35  3.42 
+## 4     2 shEEF1AKMT3 #1 0.962 6.90 
+## 5     4 Scramble       2.17  5.45 
+## 6     4 shEEF1AKMT3 #1 1.96  8.18 
+## 7     6 Scramble       1.84  6.15 
+## 8     6 shEEF1AKMT3 #1 1.67  9.48</code></pre>
+<pre class="r"><code>df  </code></pre>
+<pre><code>##    Weeks          Group  Value
+## 1      0       Scramble  0.000
+## 2      0       Scramble  0.000
+## 3      0       Scramble  0.000
+## 4      0       Scramble  0.000
+## 5      0       Scramble  0.000
+## 6      2       Scramble  1.805
+## 7      2       Scramble  4.152
+## 8      2       Scramble  2.209
+## 9      2       Scramble  3.981
+## 10     2       Scramble  4.963
+## 11     4       Scramble  2.598
+## 12     4       Scramble  7.310
+## 13     4       Scramble  5.312
+## 14     4       Scramble  7.833
+## 15     4       Scramble  4.185
+## 16     6       Scramble  8.301
+## 17     6       Scramble  5.493
+## 18     6       Scramble  7.808
+## 19     6       Scramble  3.978
+## 20     6       Scramble  5.163
+## 21     0 shEEF1AKMT3 #1  2.737
+## 22     0 shEEF1AKMT3 #1  0.000
+## 23     0 shEEF1AKMT3 #1  0.000
+## 24     0 shEEF1AKMT3 #1  0.000
+## 25     0 shEEF1AKMT3 #1  0.000
+## 26     2 shEEF1AKMT3 #1  5.653
+## 27     2 shEEF1AKMT3 #1  8.281
+## 28     2 shEEF1AKMT3 #1  6.880
+## 29     2 shEEF1AKMT3 #1  6.509
+## 30     2 shEEF1AKMT3 #1  7.197
+## 31     4 shEEF1AKMT3 #1  6.680
+## 32     4 shEEF1AKMT3 #1 11.530
+## 33     4 shEEF1AKMT3 #1  7.048
+## 34     4 shEEF1AKMT3 #1  8.186
+## 35     4 shEEF1AKMT3 #1  7.439
+## 36     6 shEEF1AKMT3 #1  8.273
+## 37     6 shEEF1AKMT3 #1  7.371
+## 38     6 shEEF1AKMT3 #1 11.567
+## 39     6 shEEF1AKMT3 #1 10.379
+## 40     6 shEEF1AKMT3 #1  9.785</code></pre>
+<pre class="r"><code>a&lt;-ggplot(df.summary,aes(fill=Group))+
+    geom_bar(aes(x=Weeks,y=Mean),stat = &#39;identity&#39;,color=&#39;black&#39;,position = &#39;dodge&#39;,width = 1.25)+
+    geom_jitter(data=df,aes(x=Weeks,y=Value),position=position_dodge(width = 1.25),color=&#39;black&#39;)+
+    geom_errorbar(aes(x=Weeks, y=Mean, ymin=Mean,ymax=Mean+sd),position=position_dodge(width = 1.25),width=.25)
+a</code></pre>
+<p><img src="METTL21B_files/figure-html/8-2.png" width="672" /></p>
+<pre class="r"><code>c&lt;-a+theme_Publication()+
+    scale_fill_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+    scale_color_manual(values = friendly_pal(&quot;contrast_three&quot;))+
+    theme(
+          axis.title.y = element_blank(),
+          legend.position = &#39;top&#39;,
+          legend.title = element_blank(),
+          axis.title.x = element_blank(),
+          panel.grid.major.x = element_blank(),
+          aspect.ratio = 1)+
+    scale_y_continuous(expand=expand_scale(mult = c(0.0,0.3)))
+  c</code></pre>
+<p><img src="METTL21B_files/figure-html/8-3.png" width="672" /> <br></p>
 </div>
 <div id="point-3-variable" class="section level3">
 <h3>Point 3 variable</h3>
@@ -698,7 +803,7 @@ Fig6B %&gt;%
         aspect.ratio = .25)+
   scale_fill_viridis_d()+
   scale_color_viridis_d()</code></pre>
-<p><img src="METTL21B_files/figure-html/9-1.png" width="672" /></p>
+<p><img src="METTL21B_files/figure-html/9-1.png" width="672" /> <br></p>
 </div>
 <div id="point-with-correlation" class="section level3">
 <h3>Point with correlation</h3>

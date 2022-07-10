@@ -17,6 +17,7 @@ output:
 * Here I documented the codes I used to make graph/figuring for EEF1AKMT3 paper published in [Cancer Letters](https://doi.org/10.1016/j.canlet.2022.215803).
 * Unfortunately, the graph did not look so good on the published one because it was compressed in Ms. Word. 
 * These are the codes just for figuring. Data analysis was both performed in Ms. Excel and R. Don't get confused.
+<br>
 
 ### Packages and libraries
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -29,6 +30,8 @@ library(svglite)
 Sys.setenv(LANG='en')
 library(gridExtra)
 ```
+<br>
+
 ### Make uniform graph format
 ```{r 2, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -78,6 +81,7 @@ friendly_pals <- list(
 
 contrast_three = c("#004488", "#BB5566", "#DDAA33")
 ```
+<br>
 
 ### Pair Plot
 
@@ -114,6 +118,7 @@ c<-b+theme_Publication()+
         strip.text.x = element_text(size = 12, face="bold",family="Arial",colour="#f0f0f0"))
 c
 ```
+<br>
 
 ### Bar graph stacking
 * Calculate persentage downregulated and upregulated
@@ -170,6 +175,7 @@ c<-a+theme_Publication()+
         aspect.ratio = 1)
 c  
 ```
+<br>
 
 ### Bar graph with hline
 ```{r 6, echo=TRUE, message=FALSE, warning=FALSE}
@@ -194,6 +200,7 @@ a+theme_Publication()+
         axis.title.x = element_blank(),
         aspect.ratio = 1)
 ```
+<br>
 
 ### Bar graph with errorbar
 ```{r 7, echo=TRUE, message=FALSE, warning=FALSE}
@@ -228,8 +235,9 @@ a+theme_Publication()+
         aspect.ratio = 1.75)
 }
 ```
+<br>
 
-### Bar graph (multiple)
+### Bar graph (multiple) with deviation
 ```{r 8, echo=TRUE, message=FALSE, warning=FALSE}
 Fig5H<-read.delim("~/Repository/repository/docs/M21B/M21B Fig 5H.csv",sep = '\t')
 
@@ -261,7 +269,47 @@ a+theme_Publication()+
         axis.title.x = element_blank(),
         panel.grid.major.x = element_blank(),
         aspect.ratio = .7)
+
+
+Fig2F<-read.delim("~/Repository/repository/docs/M21B/M21B Fig 2F.csv",sep = '\t')
+head(Fig2F)
+Fig2F<-Fig2F %>% 
+  
+  mutate(Group = case_when(Group == 'shControl' ~ 'Scramble',
+                           Group == 'shM21B' ~ 'shEEF1AKMT3 #1'))
+head(Fig2F)
+
+df<-Fig2F
+df.summary<-df %>% 
+    group_by(Weeks,Group) %>% 
+    summarise(
+      sd=sd(`Value`,na.rm = TRUE),
+      Mean=mean(`Value`)
+    )
+  
+df.summary
+df  
+  
+a<-ggplot(df.summary,aes(fill=Group))+
+    geom_bar(aes(x=Weeks,y=Mean),stat = 'identity',color='black',position = 'dodge',width = 1.25)+
+    geom_jitter(data=df,aes(x=Weeks,y=Value),position=position_dodge(width = 1.25),color='black')+
+    geom_errorbar(aes(x=Weeks, y=Mean, ymin=Mean,ymax=Mean+sd),position=position_dodge(width = 1.25),width=.25)
+a
+c<-a+theme_Publication()+
+    scale_fill_manual(values = friendly_pal("contrast_three"))+
+    scale_color_manual(values = friendly_pal("contrast_three"))+
+    theme(
+          axis.title.y = element_blank(),
+          legend.position = 'top',
+          legend.title = element_blank(),
+          axis.title.x = element_blank(),
+          panel.grid.major.x = element_blank(),
+          aspect.ratio = 1)+
+    scale_y_continuous(expand=expand_scale(mult = c(0.0,0.3)))
+  c
+
 ```
+<br>
 
 ### Point 3 variable
 
@@ -295,6 +343,7 @@ Fig6B %>%
   scale_fill_viridis_d()+
   scale_color_viridis_d()
 ```
+<br>
 
 ### Point with correlation
 ```{r 10, ,echo=TRUE, message=FALSE, warning=FALSE}

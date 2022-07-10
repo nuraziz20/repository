@@ -7,6 +7,12 @@ navbar:
     menu:
     - text: Plotting (EEF1AKMT3 paper example)
       href: METTL21B.html
+    - text: RNAseq analysis
+      href: PRMT1-RNAseq-recovery.html
 output:
   html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: FALSE
+    toc_depth: 4
     theme: yeti
