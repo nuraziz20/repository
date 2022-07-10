@@ -183,15 +183,17 @@ fc %>%
 <br>
 * Make a venn diagram to see overlapping DEGs in 3 conditions.
 
+### Venn diagram
+
 ```{r venn, echo=TRUE, message=FALSE, warning=FALSE}
 
 #Filtered regulated genes to make venn
 SH.regulated<-fc %>% 
   filter(grupSH == 'Downregulated' | grupSH == 'Upregulated')
 SI.regulated<-fc %>% 
-  filter(grupSI == 'Downregulated' | grupSH == 'Upregulated')
+  filter(grupSI == 'Downregulated' | grupSI == 'Upregulated')
 REC.regulated<-fc %>% 
-  filter(grupREC == 'Downregulated' | grupSH == 'Upregulated')
+  filter(grupREC == 'Downregulated' | grupREC == 'Upregulated')
 
 
 D<-list('Group SH'=as.character(SH.regulated$Gene),
@@ -203,7 +205,7 @@ ggvenn(D,fill_color = c("#386cb0","#fdb462","gray"),fill_alpha = .3,text_size = 
 
 ```
 <br>
-* From venn we can see about 871 DEGs overlap, then we filter again and assign positive or negatively regulated by PRMT1
+* From venn we can see about 131 DEGs overlap, then we filter again and assign positive or negatively regulated by PRMT1
 <br>
 ```{r over, echo=TRUE, message=FALSE, warning=FALSE}
 #what are those genes?
@@ -218,4 +220,22 @@ overlap<-overlap %>%
 
 DT::datatable(overlap)
 
+```
+
+### Final filtering Positive/Negative
+
+<br>
+
+#### Positively regulated by PRMT1
+```{r final, echo=TRUE, message=FALSE, warning=FALSE}
+Positive.cor<-(overlap %>% filter(grupSH == 'Downregulated' & grupSI == 'Downregulated' & grupREC == 'Upregulated'))
+DT::datatable(Positive.cor)
+```
+<br>
+
+#### Negatively regulated by PRMT1
+```{r final2, echo=TRUE, message=FALSE, warning=FALSE}
+
+Negative.cor<-(overlap %>% filter(grupSH == 'Upregulated' & grupSI == 'Upregulated' & grupREC == 'Downregulated'))
+DT::datatable(Negative.cor)
 ```
