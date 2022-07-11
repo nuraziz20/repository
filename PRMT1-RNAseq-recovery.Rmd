@@ -14,7 +14,7 @@ output:
     toc_collapsed: FALSE
     toc_depth: 4
     number_sections: true
-    theme: lumen
+    theme: yeti
 ---
 
 ```{r setup, include=FALSE}
@@ -254,8 +254,10 @@ s1.list.pos<-list('Group SH'=as.character(pos.SH$Gene),
                    'Group SI'=as.character(pos.SI$Gene),
                    'Group Recovery'=as.character(pos.REC$Gene))
 
-ggvenn(s1.list.pos,fill_color = c("#386cb0","#fdb462","gray"),fill_alpha = .3,text_size = 5,show_percentage = F)+
+v1pos<-ggvenn(s1.list.pos,fill_color = c("#386cb0","#fdb462","gray"),fill_alpha = .3,text_size = 5,show_percentage = F)+
   ggtitle("Overlap DEGs",subtitle = "Positively regulated by PRMT1")
+
+v1pos
 ```
 <br>
 
@@ -284,7 +286,7 @@ kegg.pos<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
 create_dt(kegg.pos)
 
 colnames(kegg.pos)
-kegg.pos %>% 
+en.kegg.pos<-kegg.pos %>% 
   filter(P.value < 0.05) %>% 
   mutate(minlog=-(log10(P.value))) %>% 
   arrange(desc(minlog)) %>% 
@@ -298,17 +300,18 @@ kegg.pos %>%
         legend.position = 'right',
         legend.direction = 'vertical',
         panel.grid.major.x = element_blank(),
-        aspect.ratio = 1.65,
+        aspect.ratio = 1.8,
         legend.key.size= unit(.5, "cm"))+
   scale_fill_viridis_c()+
   xlab(expression(- log[10]*"(P-value)"))+
   labs(fill=expression(- log[10]*"(P-value)"))+
   ggtitle("Top 20 KEGG_2021_Human",subtitle = 'Positively regulated by PRMT1')
+en.kegg.pos
 
 Msig.pos<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
 create_dt(Msig.pos)
 
-Msig.pos %>% 
+en.Msig.pos<-Msig.pos %>% 
   filter(P.value < 0.05) %>% 
   mutate(minlog=-(log10(P.value))) %>% 
   arrange(desc(minlog)) %>% 
@@ -328,7 +331,7 @@ Msig.pos %>%
   xlab(expression(- log[10]*"(P-value)"))+
   labs(fill=expression(- log[10]*"(P-value)"))+
   ggtitle("MSigDB_Hallmark_2020",subtitle = 'Positively regulated by PRMT1')
-
+en.Msig.pos
 
 ```
 <br>
@@ -337,19 +340,20 @@ Msig.pos %>%
 ### Make venn only negative
 ```{r S1neg, echo=TRUE, message=FALSE, warning=FALSE}
 # We can make venn again only negative
-pos.SH<-SH.regulated %>% 
+neg.SH<-SH.regulated %>% 
   filter(grupSH=='Upregulated')
-pos.SI<-SI.regulated %>% 
+neg.SI<-SI.regulated %>% 
   filter(grupSI=='Upregulated')
-pos.REC<-REC.regulated %>% 
+neg.REC<-REC.regulated %>% 
   filter(grupREC=='Downregulated')
 
-s1.list.neg<-list('Group SH'=as.character(pos.SH$Gene),
-                   'Group SI'=as.character(pos.SI$Gene),
-                   'Group Recovery'=as.character(pos.REC$Gene))
+s1.list.neg<-list('Group SH'=as.character(neg.SH$Gene),
+                   'Group SI'=as.character(neg.SI$Gene),
+                   'Group Recovery'=as.character(neg.REC$Gene))
 
-ggvenn(s1.list.neg,fill_color = c("#386cb0","#fdb462","gray"),fill_alpha = .3,text_size = 5,show_percentage = F)+
+v1neg<-ggvenn(s1.list.neg,fill_color = c("#386cb0","#fdb462","gray"),fill_alpha = .3,text_size = 5,show_percentage = F)+
   ggtitle("Overlap DEGs",subtitle = "Negatively regulated by PRMT1")
+v1neg
 ```
 <br>
 
@@ -377,7 +381,7 @@ if (websiteLive) {
 kegg.neg<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
 create_dt(kegg.neg)
 
-kegg.neg %>% 
+en.kegg.neg<-kegg.neg %>% 
   filter(P.value < 0.05) %>% 
   mutate(minlog=-(log10(P.value))) %>% 
   arrange(desc(minlog)) %>% 
@@ -396,12 +400,13 @@ kegg.neg %>%
   scale_fill_viridis_c()+
   xlab(expression(- log[10]*"(P-value)"))+
   labs(fill=expression(- log[10]*"(P-value)"))+
-  ggtitle("Top 20 KEGG_2021_Human",subtitle = 'Negatively regulated by PRMT1')
+  ggtitle("KEGG_2021_Human",subtitle = 'Negatively regulated by PRMT1')
+en.kegg.neg
 
 Msig.neg<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
 create_dt(Msig.neg)
 
-Msig.neg %>% 
+en.Msig.neg<-Msig.neg %>% 
   filter(P.value < 0.05) %>% 
   mutate(minlog=-(log10(P.value))) %>% 
   arrange(desc(minlog)) %>% 
@@ -421,6 +426,190 @@ Msig.neg %>%
   xlab(expression(- log[10]*"(P-value)"))+
   labs(fill=expression(- log[10]*"(P-value)"))+
   ggtitle("MSigDB_Hallmark_2020",subtitle = 'Negatively regulated by PRMT1')
+en.Msig.neg
 
+```
+
+<br>
+
+# Scenario 2
+
+* Scenario 2 consider knockdown and overexpression by analyzing separately
+
+## Compare using venn diagram
+
+```{r collectS1pos, echo=TRUE, message=FALSE, warning=FALSE}
+library(gridExtra)
+grid.arrange(v1pos,v1neg,ncol=2) 
+
+s2.list.pos<-list('Group SH'=as.character(pos.SH$Gene),
+                   'Group SI'=as.character(pos.SI$Gene))
+
+v2pos<-ggvenn(s2.list.pos,fill_color = c("#386cb0","#fdb462"),fill_alpha = .3,text_size = 5,show_percentage = F)+
+  ggtitle("Overlap DEGs",subtitle = "Positively regulated by PRMT1")
+
+s2.list.neg<-list('Group SH'=as.character(neg.SH$Gene),
+                   'Group SI'=as.character(neg.SI$Gene))
+
+v2neg<-ggvenn(s2.list.neg,fill_color = c("#386cb0","#fdb462"),fill_alpha = .3,text_size = 5,show_percentage = F)+
+  ggtitle("Overlap DEGs",subtitle = "Negatively regulated by PRMT1")
+
+# Venn only knockdown
+grid.arrange(v2pos,v2neg,ncol=2)
+
+```
+
+<br>
+
+## Datatable overlap 
+```{r dat s2, echo=TRUE, message=FALSE, warning=FALSE}
+overlap<-as.data.frame(intersect(x=as.character(SH.regulated$Gene),y=as.character(SI.regulated$Gene)))
+colnames(overlap)[1]<-"Gene"
+
+overlap<-overlap %>% 
+  left_join(fc) %>% 
+  select(Gene,grupSH,grupSI)
+
+S2.Positive.cor<-(overlap %>% filter(grupSH == 'Downregulated' & grupSI == 'Downregulated'))
+create_dt(S2.Positive.cor)
+
+S2.Negative.cor<-(overlap %>% filter(grupSH == 'Upregulated' & grupSI == 'Upregulated'))
+create_dt(S2.Negative.cor)
+```
+
+<br>
+
+
+## Enrichment analysis (Positive)
+```{r enrich4, echo=TRUE, message=FALSE, warning=FALSE}
+library(enrichR)
+setEnrichrSite("Enrichr") # Human genes
+websiteLive <- TRUE
+
+
+dbs <- c("KEGG_2021_Human","MSigDB_Hallmark_2020")
+if (is.null(dbs)) websiteLive <- FALSE
+if (websiteLive) {
+    enriched <- enrichr(c(S2.Positive.cor$Gene), dbs)
+}
+
+
+kegg.pos<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
+create_dt(kegg.pos)
+
+en.kegg.pos<-kegg.pos %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.65,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("KEGG_2021_Human",subtitle = 'Negatively regulated by PRMT1')
+en.kegg.pos
+
+Msig.pos<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
+create_dt(Msig.pos)
+
+en.Msig.pos<-Msig.pos %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.7,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("MSigDB_Hallmark_2020",subtitle = 'Negatively regulated by PRMT1')
+en.Msig.pos
+
+```
+
+<br>
+
+## Enrichment analysis (negative)
+```{r enrich3, echo=TRUE, message=FALSE, warning=FALSE}
+library(enrichR)
+setEnrichrSite("Enrichr") # Human genes
+websiteLive <- TRUE
+
+
+dbs <- c("KEGG_2021_Human","MSigDB_Hallmark_2020")
+if (is.null(dbs)) websiteLive <- FALSE
+if (websiteLive) {
+    enriched <- enrichr(c(S2.Negative.cor$Gene), dbs)
+}
+
+
+kegg.neg<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
+create_dt(kegg.neg)
+
+en.kegg.neg<-kegg.neg %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.65,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("KEGG_2021_Human",subtitle = 'Negatively regulated by PRMT1')
+en.kegg.neg
+
+Msig.neg<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
+create_dt(Msig.neg)
+
+en.Msig.neg<-Msig.neg %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = .5,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("MSigDB_Hallmark_2020",subtitle = 'Negatively regulated by PRMT1')
+en.Msig.neg
 
 ```
