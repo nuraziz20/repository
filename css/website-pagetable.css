@@ -43,11 +43,36 @@ d-article {
 
 
 /* PUBLICATIONS PAGE */
-caption span {
-  display: none;
-}
+
 caption {
   font-size: 2em;
   margin-top: 0.8em;
   padding-bottom: 0.2em;
+}
+
+td {
+  vertical-align: top;
+}
+d-article table td {
+  padding: 5px 8px;
+  border: none;
+}
+table {
+  border-bottom: none !important;
+}
+td:first-child {
+  width: 20%;
+}
+
+
+/* publications */
+.pandoc-table {
+  color: black;
+  line-height: 170%;
+}
+
+/* style hyperlinks */
+d-article a {
+  color: #337ab7;
+  border: none;
 }
