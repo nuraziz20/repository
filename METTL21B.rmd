@@ -10,16 +10,20 @@ output:
     - https://use.fontawesome.com/releases/v5.7.2/css/all.css
     toc: true
     toc_float: true
+    toc_collapsed: FALSE
+    toc_depth: 4
+    number_sections: true
+    theme: yeti
 
 ---
 
-### Note
+# Note
 * Here I documented the codes I used to make graph/figuring for EEF1AKMT3 paper published in [Cancer Letters](https://doi.org/10.1016/j.canlet.2022.215803).
 * Unfortunately, the graph did not look so good on the published one because it was compressed in Ms. Word. 
 * These are the codes just for figuring. Data analysis was both performed in Ms. Excel and R. Don't get confused.
 <br>
 
-### Packages and libraries
+# Packages and libraries
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 
 library(tidyverse)
@@ -32,7 +36,7 @@ library(gridExtra)
 ```
 <br>
 
-### Make uniform graph format
+# Make uniform graph format
 ```{r 2, echo=TRUE, message=FALSE, warning=FALSE}
 
 theme_Publication <- function(base_size=14, base_family="helvetica") {
@@ -83,7 +87,7 @@ contrast_three = c("#004488", "#BB5566", "#DDAA33")
 ```
 <br>
 
-### Pair Plot
+# Pair Plot
 
 * Geom point
 * Geom line with different color
@@ -120,7 +124,7 @@ c
 ```
 <br>
 
-### Bar graph stacking
+# Bar graph stacking
 * Calculate persentage downregulated and upregulated
 ```{r 4, echo=TRUE, message=FALSE, warning=FALSE}
 #count upregulated and downregulated
@@ -177,7 +181,7 @@ c
 ```
 <br>
 
-### Bar graph with hline
+# Bar graph with hline
 ```{r 6, echo=TRUE, message=FALSE, warning=FALSE}
 ######Figure 1F#####
 Fig1F<-read.delim("~/Repository/repository/docs/M21B/M21B Fig 1F.csv")
@@ -202,7 +206,7 @@ a+theme_Publication()+
 ```
 <br>
 
-### Bar graph with errorbar
+# Bar graph with errorbar
 ```{r 7, echo=TRUE, message=FALSE, warning=FALSE}
 Fig2A<-read.delim("~/Repository/repository/docs/M21B/M21B Fig 2A.csv",sep = '\t')
 head(Fig2A)
@@ -237,7 +241,7 @@ a+theme_Publication()+
 ```
 <br>
 
-### Bar graph (multiple) with deviation
+# Bar graph (multiple) with deviation
 ```{r 8, echo=TRUE, message=FALSE, warning=FALSE}
 Fig5H<-read.delim("~/Repository/repository/docs/M21B/M21B Fig 5H.csv",sep = '\t')
 
@@ -311,7 +315,7 @@ c<-a+theme_Publication()+
 ```
 <br>
 
-### Point 3 variable
+# Point 3 variable
 
 ```{r 9,echo=TRUE, message=FALSE, warning=FALSE }
 Fig6B<-read.delim('~/Repository/repository/docs/M21B/M21B Fig 6B.csv', sep='\t')
@@ -345,7 +349,7 @@ Fig6B %>%
 ```
 <br>
 
-### Point with correlation
+# Point with correlation
 ```{r 10, ,echo=TRUE, message=FALSE, warning=FALSE}
 corre<-read.delim('~/Repository/repository/docs/M21B/correlation.csv', sep='\t')
 library(scales)

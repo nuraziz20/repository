@@ -337,7 +337,13 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="METTL21B.html">Plotting (EEF1AKMT3 paper example)</a>
+      <a href="PRMT1-RNAseq-recovery.html">RNAseq analysis</a>
+    </li>
+    <li>
+      <a href="METTL21B.html">Plotting METTL21B</a>
+    </li>
+    <li>
+      <a href="Gene-Expression-Note-1.html">Gene Expression Note 1</a>
     </li>
   </ul>
 </li>
@@ -359,8 +365,8 @@ div.tocify {
 </div>
 
 
-<div id="note" class="section level3">
-<h3>Note</h3>
+<div id="note" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Note</h1>
 <ul>
 <li>Here I documented the codes I used to make graph/figuring for
 EEF1AKMT3 paper published in <a
@@ -372,8 +378,9 @@ because it was compressed in Ms. Word.</li>
 performed in Ms. Excel and R. Don’t get confused. <br></li>
 </ul>
 </div>
-<div id="packages-and-libraries" class="section level3">
-<h3>Packages and libraries</h3>
+<div id="packages-and-libraries" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Packages and
+libraries</h1>
 <pre class="r"><code>library(tidyverse)
 library(dplyr)
 library(ggpubfigs)
@@ -383,8 +390,9 @@ Sys.setenv(LANG=&#39;en&#39;)
 library(gridExtra)</code></pre>
 <p><br></p>
 </div>
-<div id="make-uniform-graph-format" class="section level3">
-<h3>Make uniform graph format</h3>
+<div id="make-uniform-graph-format" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Make uniform graph
+format</h1>
 <pre class="r"><code>theme_Publication &lt;- function(base_size=14, base_family=&quot;helvetica&quot;) {
   library(grid)
   library(ggthemes)
@@ -432,8 +440,8 @@ friendly_pals &lt;- list(
 contrast_three = c(&quot;#004488&quot;, &quot;#BB5566&quot;, &quot;#DDAA33&quot;)</code></pre>
 <p><br></p>
 </div>
-<div id="pair-plot" class="section level3">
-<h3>Pair Plot</h3>
+<div id="pair-plot" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Pair Plot</h1>
 <ul>
 <li>Geom point</li>
 <li>Geom line with different color</li>
@@ -475,8 +483,8 @@ c&lt;-b+theme_Publication()+
 c</code></pre>
 <p><img src="METTL21B_files/figure-html/3-1.png" width="672" /> <br></p>
 </div>
-<div id="bar-graph-stacking" class="section level3">
-<h3>Bar graph stacking</h3>
+<div id="bar-graph-stacking" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Bar graph stacking</h1>
 <ul>
 <li>Calculate persentage downregulated and upregulated</li>
 </ul>
@@ -551,8 +559,9 @@ c&lt;-a+theme_Publication()+
 c  </code></pre>
 <p><img src="METTL21B_files/figure-html/5-1.png" width="672" /> <br></p>
 </div>
-<div id="bar-graph-with-hline" class="section level3">
-<h3>Bar graph with hline</h3>
+<div id="bar-graph-with-hline" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Bar graph with
+hline</h1>
 <pre class="r"><code>######Figure 1F#####
 Fig1F&lt;-read.delim(&quot;~/Repository/repository/docs/M21B/M21B Fig 1F.csv&quot;)
 head(Fig1F)</code></pre>
@@ -583,8 +592,9 @@ a</code></pre>
         aspect.ratio = 1)</code></pre>
 <p><img src="METTL21B_files/figure-html/6-2.png" width="672" /> <br></p>
 </div>
-<div id="bar-graph-with-errorbar" class="section level3">
-<h3>Bar graph with errorbar</h3>
+<div id="bar-graph-with-errorbar" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Bar graph with
+errorbar</h1>
 <pre class="r"><code>Fig2A&lt;-read.delim(&quot;~/Repository/repository/docs/M21B/M21B Fig 2A.csv&quot;,sep = &#39;\t&#39;)
 head(Fig2A)</code></pre>
 <pre><code>##            Group     Value
@@ -623,8 +633,10 @@ a+theme_Publication()+
 }</code></pre>
 <p><img src="METTL21B_files/figure-html/7-1.png" width="672" /> <br></p>
 </div>
-<div id="bar-graph-multiple-with-deviation" class="section level3">
-<h3>Bar graph (multiple) with deviation</h3>
+<div id="bar-graph-multiple-with-deviation" class="section level1"
+number="8">
+<h1><span class="header-section-number">8</span> Bar graph (multiple)
+with deviation</h1>
 <pre class="r"><code>Fig5H&lt;-read.delim(&quot;~/Repository/repository/docs/M21B/M21B Fig 5H.csv&quot;,sep = &#39;\t&#39;)
 
 head(Fig5H)</code></pre>
@@ -767,8 +779,8 @@ a</code></pre>
   c</code></pre>
 <p><img src="METTL21B_files/figure-html/8-3.png" width="672" /> <br></p>
 </div>
-<div id="point-3-variable" class="section level3">
-<h3>Point 3 variable</h3>
+<div id="point-3-variable" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Point 3 variable</h1>
 <pre class="r"><code>Fig6B&lt;-read.delim(&#39;~/Repository/repository/docs/M21B/M21B Fig 6B.csv&#39;, sep=&#39;\t&#39;)
 head(Fig6B)</code></pre>
 <pre><code>##                   y          x pvalue    r2value pvalue.converted pval
@@ -805,8 +817,9 @@ Fig6B %&gt;%
   scale_color_viridis_d()</code></pre>
 <p><img src="METTL21B_files/figure-html/9-1.png" width="672" /> <br></p>
 </div>
-<div id="point-with-correlation" class="section level3">
-<h3>Point with correlation</h3>
+<div id="point-with-correlation" class="section level1" number="10">
+<h1><span class="header-section-number">10</span> Point with
+correlation</h1>
 <pre class="r"><code>corre&lt;-read.delim(&#39;~/Repository/repository/docs/M21B/correlation.csv&#39;, sep=&#39;\t&#39;)
 library(scales)
 corre %&gt;% 
@@ -879,7 +892,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3",
+      selectors: "h1,h2,h3,h4",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {

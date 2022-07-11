@@ -5,10 +5,12 @@ navbar:
     href: wet-lab-notebook.html
   - text: Dry Lab Notebook
     menu:
-    - text: Plotting (EEF1AKMT3 paper example)
-      href: METTL21B.html
     - text: RNAseq analysis
       href: PRMT1-RNAseq-recovery.html
+    - text: Plotting METTL21B
+      href: METTL21B.html
+    - text: Gene Expression Note 1
+      href: Gene-Expression-Note-1.html
 output:
   html_document:
     toc: true
