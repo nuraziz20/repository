@@ -1,0 +1,34 @@
+---
+title: "Gene Expression Note 2"
+author: "Nur Aziz"
+output: 
+  html_document:
+    css:
+    - css/one-column-cv.css
+    - css/website-pagetable.css
+    - css/style.css
+    - https://use.fontawesome.com/releases/v5.7.2/css/all.css
+    toc: true
+    toc_float: true
+    toc_collapsed: FALSE
+    toc_depth: 4
+    number_sections: true
+    theme: yeti
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+# Profiling Gene Expression from GEO, TCGA, GTEx
+
+Before begin, it's recommended to read these publications:
+
++ [Analysis workflow of publicly available RNA-sequencing datasets](https://doi.org/10.1016/j.xpro.2021.100478)
++ [TCGA Workflow: Analyze cancer genomics and epigenomics data using Bioconductor packages](https://doi.org/10.12688/f1000research.8923.2)
++ [TCGAbiolinks: an R/Bioconductor package for integrative analysis of TCGA data](https://doi.org/10.1093/nar/gkv1507)
++ [New functionalities in the TCGAbiolinks package for the study and integration of cancer data from GDC and GTEx](https://doi.org/10.1371/journal.pcbi.1006701)
++ [Unifying cancer and normal RNA sequencing data from different sources](https://doi.org/10.1038/sdata.2018.61)
+
+
