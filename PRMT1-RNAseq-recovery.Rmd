@@ -282,11 +282,11 @@ if (websiteLive) {
 }
 
 
-kegg.pos<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
-create_dt(kegg.pos)
+s1.kegg.pos<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
+create_dt(s1.kegg.pos)
 
-colnames(kegg.pos)
-en.kegg.pos<-kegg.pos %>% 
+colnames(s1.kegg.pos)
+en.kegg.pos<-s1.kegg.pos %>% 
   filter(P.value < 0.05) %>% 
   mutate(minlog=-(log10(P.value))) %>% 
   arrange(desc(minlog)) %>% 
@@ -311,7 +311,7 @@ en.kegg.pos
 Msig.pos<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
 create_dt(Msig.pos)
 
-en.Msig.pos<-Msig.pos %>% 
+s1.en.Msig.pos<-Msig.pos %>% 
   filter(P.value < 0.05) %>% 
   mutate(minlog=-(log10(P.value))) %>% 
   arrange(desc(minlog)) %>% 
@@ -331,7 +331,7 @@ en.Msig.pos<-Msig.pos %>%
   xlab(expression(- log[10]*"(P-value)"))+
   labs(fill=expression(- log[10]*"(P-value)"))+
   ggtitle("MSigDB_Hallmark_2020",subtitle = 'Positively regulated by PRMT1')
-en.Msig.pos
+s1.en.Msig.pos
 
 ```
 <br>
@@ -436,7 +436,9 @@ en.Msig.neg
 
 * Scenario 2 consider knockdown and overexpression by analyzing separately
 
-## Compare using venn diagram
+## Knockdown
+
+### Compare using venn diagram
 
 ```{r collectS1pos, echo=TRUE, message=FALSE, warning=FALSE}
 library(gridExtra)
@@ -461,7 +463,7 @@ grid.arrange(v2pos,v2neg,ncol=2)
 
 <br>
 
-## Datatable overlap 
+### Datatable overlap 
 ```{r dat s2, echo=TRUE, message=FALSE, warning=FALSE}
 overlap<-as.data.frame(intersect(x=as.character(SH.regulated$Gene),y=as.character(SI.regulated$Gene)))
 colnames(overlap)[1]<-"Gene"
@@ -480,7 +482,7 @@ create_dt(S2.Negative.cor)
 <br>
 
 
-## Enrichment analysis (Positive)
+### Enrichment analysis (Positive)
 ```{r enrich4, echo=TRUE, message=FALSE, warning=FALSE}
 library(enrichR)
 setEnrichrSite("Enrichr") # Human genes
@@ -516,7 +518,7 @@ en.kegg.pos<-kegg.pos %>%
   scale_fill_viridis_c()+
   xlab(expression(- log[10]*"(P-value)"))+
   labs(fill=expression(- log[10]*"(P-value)"))+
-  ggtitle("KEGG_2021_Human",subtitle = 'Negatively regulated by PRMT1')
+  ggtitle("KEGG_2021_Human",subtitle = 'Positively regulated by PRMT1')
 en.kegg.pos
 
 Msig.pos<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
@@ -541,14 +543,14 @@ en.Msig.pos<-Msig.pos %>%
   scale_fill_viridis_c()+
   xlab(expression(- log[10]*"(P-value)"))+
   labs(fill=expression(- log[10]*"(P-value)"))+
-  ggtitle("MSigDB_Hallmark_2020",subtitle = 'Negatively regulated by PRMT1')
+  ggtitle("MSigDB_Hallmark_2020",subtitle = 'Positively regulated by PRMT1')
 en.Msig.pos
 
 ```
 
 <br>
 
-## Enrichment analysis (negative)
+### Enrichment analysis (negative)
 ```{r enrich3, echo=TRUE, message=FALSE, warning=FALSE}
 library(enrichR)
 setEnrichrSite("Enrichr") # Human genes
@@ -613,3 +615,208 @@ en.Msig.neg<-Msig.neg %>%
 en.Msig.neg
 
 ```
+
+<br>
+
+## Recovery
+
+* Since there is no replicate in recovery, instead of making venn diagram, we can directly assign positive and negative DEGs
+
+### Datatable 
+```{r datatbles2}
+s2.REC.pos<-REC.regulated %>% 
+  filter(grupREC=='Upregulated') %>% 
+  select(Gene,grupREC)
+create_dt(s2.REC.pos)
+
+s2.REC.neg<-REC.regulated %>% 
+  filter(grupREC=='Downregulated') %>% 
+  select(Gene,grupREC)
+create_dt(s2.REC.neg)
+```
+
+<br>
+
+### Enrichment (Positive)
+
+```{r recoverys2Pos, echo=TRUE, message=FALSE, warning=FALSE}
+setEnrichrSite("Enrichr") # Human genes
+websiteLive <- TRUE
+dbs <- c("KEGG_2021_Human","MSigDB_Hallmark_2020")
+if (is.null(dbs)) websiteLive <- FALSE
+if (websiteLive) {
+    enriched <- enrichr(c(s2.REC.pos$Gene), dbs)
+}
+
+
+kegg.pos<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
+create_dt(kegg.pos)
+
+en.kegg.pos<-kegg.pos %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.9,
+        legend.key.size= unit(.5, "cm"),
+        axis.text.y=element_text(size = 10))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("KEGG_2021_Human",subtitle = 'Positively regulated by PRMT1')
+en.kegg.pos
+
+Msig.pos<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
+create_dt(Msig.pos)
+
+en.Msig.pos<-Msig.pos %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.65,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("MSigDB_Hallmark_2020",subtitle = 'Positively regulated by PRMT1')
+en.Msig.pos
+
+```
+<br>
+
+### Enrichment (Negative)
+
+```{r recoverys2Neg, echo=TRUE, message=FALSE, warning=FALSE}
+setEnrichrSite("Enrichr") # Human genes
+websiteLive <- TRUE
+dbs <- c("KEGG_2021_Human","MSigDB_Hallmark_2020")
+if (is.null(dbs)) websiteLive <- FALSE
+if (websiteLive) {
+    enriched <- enrichr(c(s2.REC.neg$Gene), dbs)
+}
+
+
+kegg.neg<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
+create_dt(kegg.neg)
+
+en.kegg.neg<-kegg.neg %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.65,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("KEGG_2021_Human",subtitle = 'Negatively regulated by PRMT1')
+en.kegg.neg
+
+Msig.neg<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
+create_dt(Msig.neg)
+
+en.Msig.neg<-Msig.neg %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 0.7,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("MSigDB_Hallmark_2020",subtitle = 'Negatively regulated by PRMT1')
+en.Msig.neg
+
+```
+<br>
+
+# Conclusion
+
+* From the results above, it seems that although overlapping genes in 3 conditions (Scenario 1) identified less in venn diagram compared to Scenario 2, the enrichment analysis showed better results (reference to other enrichment analysis from other PRMT1 RNAseq published paper)
+* We can now collect and tweak the figuring for publication
+* For example for enrichment, we chose only KEGG and selected certain terms
+
+```{r conclusion, echo=TRUE, message=FALSE, warning=FALSE}
+create_dt(s1.kegg.pos)
+
+en.kegg.pos<-s1.kegg.pos %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  filter(Term == "Proteoglycans in cancer" |
+           Term == "Salmonella infection"|
+           Term == "MAPK signaling pathway"|
+           Term == "Signaling pathways regulating pluripotency of stem cells"|
+           Term == "Breast cancer"|
+           Term == "Gastric cancer") %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.5,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("KEGG_2021_Human",subtitle = 'Positively regulated by PRMT1')
+
+en.kegg.pos
+
+```
+
+* Remember, KEGG above is only enrichment from 28 genes as show in venn and datatable below
+
+```{r conclusion2, echo=TRUE, message=FALSE, warning=FALSE}
+v1pos
+create_dt(S1.Positive.cor)
+
+
+```
+
+
+
+
