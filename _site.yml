@@ -11,6 +11,8 @@ navbar:
       href: METTL21B.html
     - text: Gene Expression Note 1
       href: Gene-Expression-Note-1.html
+    - text: Gene Expression Note 2
+      href: Gene-Expression-Note-2.html
 output:
   html_document:
     toc: true

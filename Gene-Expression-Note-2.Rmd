@@ -1,5 +1,6 @@
 ---
 title: "Gene Expression Note 2"
+subtitle: <h1> Profiling Gene Expression TCGA </h1>
 author: "Nur Aziz"
 output: 
   html_document:
@@ -21,14 +22,371 @@ knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 
-# Profiling Gene Expression from GEO, TCGA, GTEx
+This markdown mainly continuity from [Gene Expression Note 1](https://www.nuraziz.site/gene-expression-note-1) but focus on TCGA analysis using TCGAbiolinks library. As always, it is recommended to check these publications first!
 
-Before begin, it's recommended to read these publications:
-
-+ [Analysis workflow of publicly available RNA-sequencing datasets](https://doi.org/10.1016/j.xpro.2021.100478)
 + [TCGA Workflow: Analyze cancer genomics and epigenomics data using Bioconductor packages](https://doi.org/10.12688/f1000research.8923.2)
 + [TCGAbiolinks: an R/Bioconductor package for integrative analysis of TCGA data](https://doi.org/10.1093/nar/gkv1507)
-+ [New functionalities in the TCGAbiolinks package for the study and integration of cancer data from GDC and GTEx](https://doi.org/10.1371/journal.pcbi.1006701)
-+ [Unifying cancer and normal RNA sequencing data from different sources](https://doi.org/10.1038/sdata.2018.61)
+
+# Libraries
+```{r 1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+devtools::install_github(repo = "BioinformaticsFMRP/TCGAbiolinks",force = TRUE)
+devtools::install_github(repo = "ELELAB/TCGAbiolinks")
+```
+
+```{r , echo=TRUE, message=FALSE, warning=FALSE}
+
+library(TCGAbiolinks)
+library(SummarizedExperiment)
+library(limma)
+library(tidyverse)
+library(dplyr)
+library(DT)
+library(forcats)
+scale_fill_aziz <- function(...){
+  library(scales)
+  discrete_scale("fill","aziz",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+  
+}
+
+scale_colour_aziz <- function(...){
+  library(scales)
+  discrete_scale("colour","aziz",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+}
+theme_Publication <- function(base_size=14, base_family="helvetica") {
+  library(grid)
+  library(ggthemes)
+  (theme_foundation(base_size=base_size, base_family=base_family)
+    + theme(plot.title = element_text(face = "bold",
+                                      size = rel(1.2), hjust = 0.5),
+            text = element_text(),
+            panel.background = element_rect(colour = NA),
+            plot.background = element_rect(colour = NA),
+            panel.border = element_rect(colour = NA),
+            axis.title = element_text(face = "bold",size = rel(1)),
+            axis.title.y = element_text(angle=90,vjust =2),
+            axis.title.x = element_text(vjust = -0.2),
+            axis.text = element_text(), 
+            axis.line = element_line(colour="black"),
+            axis.ticks = element_line(),
+            panel.grid.major = element_line(colour="#f0f0f0"),
+            panel.grid.minor = element_blank(),
+            legend.key = element_rect(colour = NA),
+            legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.key.size= unit(0.2, "cm"),
+            legend.margin = unit(0, "cm"),
+            legend.title = element_text(face="italic"),
+            plot.margin=unit(c(10,5,5,5),"mm"),
+            strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+            strip.text = element_text(face="bold"),
+            plot.subtitle = element_text(hjust = 0.5)
+    ))
+}
+create_dt<-function(x){
+  DT::datatable(x,
+                extensions = 'Buttons',
+                options = list(dom='Blfrtip',
+                               buttons=c('copy', 'csv', 'excel','pdf', 'print'),
+                               lengthMenu=list(c(10,25,50,-1),
+                                               c(10,25,50,'All'))))
+}
+```
+
+# TCGA Query
+```{r 2, echo=TRUE, message=FALSE, warning=FALSE}
+query <- GDCquery(project = "TCGA-STAD",
+                  data.category = "Gene expression",
+                  data.type = "Gene expression quantification",
+                  platform = "Illumina HiSeq",
+                  file.type = "results",
+                  legacy = TRUE,
+                  sample.type = c("Primary Tumor"))
+
+GDCdownload(query)
+stad.exp<-GDCprepare(query,
+                     save = TRUE,
+                     summarizedExperiment = TRUE,
+                     save.filename = "STADIllumina_HiSeq.rda")
+head(stad.exp)
+rse <- get(load("STADIllumina_HiSeq.rda"))
 
 
+dataClin_STAD <- GDCquery_clinic("TCGA-STAD", "Clinical")
+create_dt(dataClin_STAD)
+
+dataPrep_STAD<-TCGAanalyze_Preprocessing(rse,
+                                         cor.cut = .5,
+                                         datatype = "raw_count",
+                                         filename = "STAD_IlluminaHiSeq_RNASeqV2.png")
+```
+
+
+# Normalization and filtering
+```{r , echo=TRUE, message=FALSE, warning=FALSE}
+
+# normalization of genes
+dataNorm<-TCGAanalyze_Normalization(tabDF = dataPrep_STAD,geneInfo = geneInfo,method = "gcContent")
+
+dim(dataNorm)
+
+# quantile filter of genes
+dataFilt <- TCGAanalyze_Filtering(tabDF = dataNorm,
+                                  method = "quantile",
+                                  qnt.cut =  0.25)
+
+dim(dataFilt)
+
+#check clinical
+rse$age_at_index
+rse$definition
+rse$days_to_diagnosis
+rse$ajcc_pathologic_stage
+rse$tissue_or_organ_of_origin
+rse$days_to_last_follow_up
+rse$primary_diagnosis
+
+rse$ajcc_pathologic_t
+rse$ajcc_pathologic_n
+rse$ajcc_pathologic_m
+
+rse$site_of_resection_or_biopsy
+rse$gender
+
+rse$paper_Lauren.Class
+rse$paper_Age.at.Initial.Diagnosis
+rse$paper_ARID1A.mutation
+rse$paper_CDKN2A.Epigenetically.Silenced
+rse$paper_Country
+rse$paper_Days.to.Death
+rse$paper_Days.to.Last.Follow.up
+
+#BCR Biotab for clinical tcga
+
+querycli_STAD<-GDCquery(project = "TCGA-STAD",
+                        data.category = "Clinical",
+                        data.type = "Clinical Supplement",
+                        data.format = "BCR Biotab")
+GDCdownload(querycli_STAD)
+clinical.BCRtab.STAD <- GDCprepare(querycli_STAD)
+# All available tables
+names(clinical.BCRtab.STAD)
+# colnames from clinical_patient_stad
+tibble::tibble(sort(colnames(clinical.BCRtab.STAD$clinical_patient_stad)))
+# pathologic tuimor stage status count
+plyr::count(clinical.BCRtab.STAD$clinical_patient_stad$ajcc_pathologic_tumor_stage)   
+
+
+# subset for custom clinical
+
+barcode<-data.frame(rse$paper_patient)
+sex<-data.frame(rse$paper_Gender)
+T_stage<-data.frame(rse$paper_Pathologic.T)
+N_stage<-data.frame(rse$paper_Pathologic.N)
+M_stage<-data.frame(rse$paper_Pathologic.M)
+TCGA_sub<-data.frame(rse$paper_Molecular.Subtype)
+lauren_sub<-data.frame(rse$paper_Lauren.Class)
+age<-data.frame(rse$paper_Age.at.Initial.Diagnosis)
+vital_sta<-data.frame(rse$paper_Vital.Status)
+Days.to.Death<-data.frame(rse$paper_Days.to.Death)
+Days.to.Last.Follow.up<-data.frame(rse$paper_Days.to.Last.Follow.up)
+Days.to.Recurrence<-data.frame(rse$paper_Days.to.Recurrence)
+ARID1A_mut<-data.frame(rse$paper_ARID1A.mutation)
+KRAS_mut<-data.frame(rse$paper_KRAS.mutation)
+PIK3CA_mut<-data.frame(rse$paper_PIK3CA.mutation)
+RHOA_mut<-data.frame(rse$paper_RHOA.mutation)
+TP53_mut<-data.frame(rse$paper_TP53.mutation)
+
+customeclinSTAD<-cbind(barcode,
+                       sex,
+                       T_stage,
+                       N_stage,
+                       M_stage,
+                       TCGA_sub,
+                       lauren_sub,
+                       age,
+                       vital_sta,
+                       Days.to.Death,
+                       Days.to.Last.Follow.up,
+                       Days.to.Recurrence,
+                       ARID1A_mut,
+                       KRAS_mut,
+                       PIK3CA_mut,
+                       RHOA_mut,
+                       TP53_mut)
+
+create_dt(customeclinSTAD)
+
+#make barcode same with clinical
+colnames(dataFilt)<-substr(colnames(dataFilt),1,12)
+
+#transpose
+t.dataFilt<-(t(dataFilt))
+t.dataFilt<-as.data.frame(t.dataFilt) %>% 
+  mutate(rse.paper_patient=row.names(t.dataFilt))
+dim(t.dataFilt)
+t.dataFilt<-t.dataFilt %>% 
+  select(14900,1:14899)
+
+# since we only require FAM86A, PRMT1, and CAMKMT, and no need to perform exploratory analysis (yet)
+# how about just subset only these genes (lighter processing)
+t.dataFilt<-t.dataFilt %>% 
+  select(1,'FAM86A','C2orf34','PRMT1')
+
+#leftjoin to other parameter
+t.dataFilt<-t.dataFilt %>% 
+  left_join(customeclinSTAD)
+create_dt(t.dataFilt)
+
+```
+
+# Plotting and Statistics
+```{r , echo=TRUE, message=FALSE, warning=FALSE}
+# Plotting expression based on subtype
+sub_TCGA<-t.dataFilt
+head(sub_TCGA)
+sub_TCGA<-sub_TCGA %>% 
+  mutate(log2.FAM86A=log(FAM86A),
+         log2.CAMKMT=log(C2orf34),
+         log2.PRMT1=log(PRMT1))
+colnames(sub_TCGA)
+
+#by T
+sub_TCGA<-sub_TCGA %>% 
+  mutate(T2 = case_when(rse.paper_Pathologic.T == 'T1' ~ 'T1',
+                        rse.paper_Pathologic.T == 'T1a' ~ 'T1',
+                        rse.paper_Pathologic.T == 'T1b' ~ 'T1',
+                        rse.paper_Pathologic.T == 'T2' ~ 'T2',
+                        rse.paper_Pathologic.T == 'T2a' ~ 'T2',
+                        rse.paper_Pathologic.T == 'T2b' ~ 'T2',
+                        rse.paper_Pathologic.T == 'T3' ~ 'T3',
+                        rse.paper_Pathologic.T == 'T4' ~ 'T4',
+                        rse.paper_Pathologic.T == 'T4a' ~ 'T4',
+                        rse.paper_Pathologic.T == 'T4b' ~ 'T4'))
+
+ggplot(data=subset(sub_TCGA, !is.na(T2)),aes(x=T2,y=log2.FAM86A,fill=T2))+
+  stat_boxplot(geom ='errorbar',width=.2) +
+  geom_jitter(colour='gray90',alpha=.8,width = .2)+
+  geom_boxplot(width=.6)+
+  theme_Publication()+
+  scale_fill_aziz()+
+  scale_y_continuous(expand=expand_scale(mult = c(0.1,0.2)))+
+  theme(axis.text = element_text(family = "Arial",color="black"),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.text.x = element_text(angle = 45,vjust = 1, hjust=1),
+        legend.position = 'none',
+        aspect.ratio = 1.5,
+        panel.grid.major.x = element_blank())+
+  labs(y=expression('FAM86A expression (log'[2]*")"),x=NULL)
+
+kruskal.test(log2.FAM86A ~ T2, data = sub_TCGA)
+pairwise.wilcox.test((sub_TCGA$log2.FAM86A), sub_TCGA$T2,paired=FALSE,
+                     p.adjust.method = "BH")
+
+
+
+#by N
+sub_TCGA<-sub_TCGA %>% 
+  mutate(N2 = case_when(rse.paper_Pathologic.N == 'N0' ~ 'N0',
+                        rse.paper_Pathologic.N == 'N1' ~ 'N1',
+                        rse.paper_Pathologic.N == 'N2' ~ 'N2',
+                        rse.paper_Pathologic.N == 'N3' ~ 'N3',
+                        rse.paper_Pathologic.N == 'N3a' ~ 'N3',
+                        rse.paper_Pathologic.N == 'N3b' ~ 'N3'))
+
+ggplot(data=subset(sub_TCGA, !is.na(N2)),aes(x=N2,y=log2.FAM86A,fill=N2))+
+  stat_boxplot(geom ='errorbar',width=.2) +
+  geom_jitter(colour='gray90',alpha=.8,width = .2)+
+  geom_boxplot(width=.6)+
+  theme_Publication()+
+  scale_fill_aziz()+
+  scale_y_continuous(expand=expand_scale(mult = c(0.1,0.2)))+
+  theme(axis.text = element_text(family = "Arial",color="black"),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.text.x = element_text(angle = 45,vjust = 1, hjust=1),
+        legend.position = 'none',
+        aspect.ratio = 1.5,
+        panel.grid.major.x = element_blank())+
+  labs(y=expression('FAM86A expression (log'[2]*")"),x=NULL)
+
+kruskal.test(log2.FAM86A ~ N2, data = sub_TCGA)
+pairwise.wilcox.test((sub_TCGA$log2.FAM86A), sub_TCGA$N2,
+                     paired=FALSE,
+                     p.adjust.method = "BH")
+
+
+#by M
+sub_TCGA<-sub_TCGA %>% 
+  mutate(M2 = case_when(rse.paper_Pathologic.M == 'M0' ~ 'M0',
+                        rse.paper_Pathologic.M == 'M1' ~ 'M1'))
+ggplot(data=subset(sub_TCGA, !is.na(M2)),aes(x=M2,y=log2.FAM86A,fill=M2))+
+    stat_boxplot(geom ='errorbar',width=.2) +
+  geom_jitter(colour='gray90',alpha=.8,width = .2)+
+  geom_boxplot(width=.6)+
+  theme_Publication()+
+  scale_fill_aziz()+
+  scale_y_continuous(expand=expand_scale(mult = c(0.1,0.2)))+
+  theme(axis.text = element_text(family = "Arial",color="black"),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.text.x = element_text(angle = 45,vjust = 1, hjust=1),
+        legend.position = 'none',
+        aspect.ratio = 1.85,
+        panel.grid.major.x = element_blank())+
+  labs(y=expression('FAM86A expression (log'[2]*")"),x=NULL)
+
+wilcox.test(log2.FAM86A ~ M2, data = sub_TCGA,
+            exact = FALSE)
+
+sub_rse<-sub_TCGA
+colnames(sub_rse)
+
+sub_rse<-sub_rse %>% 
+  mutate(Lauren2 = case_when(rse.paper_Lauren.Class == 'Diffuse' ~ 'Diffuse',
+                             rse.paper_Lauren.Class == 'Intestinal' ~ 'Intestinal',
+                             rse.paper_Lauren.Class == 'Mixed' ~ 'Mixed'))
+
+ggplot(data=subset(sub_rse, !is.na(Lauren2)),aes(x=Lauren2,y=log2.FAM86A,fill=Lauren2))+
+  stat_boxplot(geom ='errorbar',width=.2) +
+  geom_jitter(colour='gray90',alpha=.8,width = .2)+
+  geom_boxplot(width=.6)+
+  theme_Publication()+
+  scale_fill_aziz()+
+  scale_y_continuous(expand=expand_scale(mult = c(0.1,0.2)))+
+  theme(axis.text = element_text(family = "Arial",color="black"),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.text.x = element_text(angle = 45,vjust = 1, hjust=1),
+        legend.position = 'none',
+        aspect.ratio = 1.85,
+        panel.grid.major.x = element_blank())+
+  labs(y=expression('FAM86A expression (log'[2]*")"),x=NULL)
+
+kruskal.test(log2.FAM86A ~ Lauren2, data = sub_rse)
+pairwise.wilcox.test(sub_rse$log2.FAM86A, sub_rse$Lauren2,
+                     p.adjust.method = "BH")
+
+#Mol.sub
+sub_rse<-sub_rse %>% 
+  mutate(mol_tcga = case_when(rse.paper_Molecular.Subtype == 'CIN' ~ 'CIN',
+                              rse.paper_Molecular.Subtype == 'EBV' ~ 'EBV',
+                              rse.paper_Molecular.Subtype == 'GS' ~ 'GS',
+                              rse.paper_Molecular.Subtype == 'MSI' ~ 'MSI'))
+
+ggplot(data=subset(sub_rse, !is.na(mol_tcga)),aes(x=mol_tcga,y=log2.FAM86A,fill=mol_tcga))+
+  stat_boxplot(geom ='errorbar',width=.2) +
+  geom_jitter(colour='gray90',alpha=.8,width = .2)+
+  geom_boxplot(width=.6)+
+  theme_Publication()+
+  scale_fill_aziz()+
+  scale_y_continuous(expand=expand_scale(mult = c(0.1,0.2)))+
+  theme(axis.text = element_text(family = "Arial",color="black"),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.text.x = element_text(angle = 45,vjust = 1, hjust=1),
+        legend.position = 'none',
+        aspect.ratio = 1.5,
+        panel.grid.major.x = element_blank())+
+  labs(y=expression('FAM86A expression (log'[2]*")"),x=NULL)
+
+kruskal.test(log2.FAM86A ~ mol_tcga, data = sub_rse)
+pairwise.wilcox.test(sub_rse$log2.FAM86A, sub_rse$mol_tcga,paired=FALSE,
+                     p.adjust.method = "BH")
+
+```
