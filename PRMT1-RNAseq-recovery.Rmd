@@ -119,7 +119,7 @@ colnames(fc)[8]<-"shPRMT1plusPRMT1"} #change the column name
 
 # Threshold filtering (DEGs)
 * Differentially expressed genes (DEGs) commonly selected after threshold filtering using both log FC value and p-value. 
-* But since there is no replication in the sample, we can filter DEGs based on log FC value.
+* But since there is no replication in the sample, we can filter DEGs based on log FC value only.
 
 ```{r 3, echo=TRUE}
 fc<-fc %>% 
@@ -301,7 +301,8 @@ en.kegg.pos<-s1.kegg.pos %>%
         legend.direction = 'vertical',
         panel.grid.major.x = element_blank(),
         aspect.ratio = 1.8,
-        legend.key.size= unit(.5, "cm"))+
+        legend.key.size= unit(.5, "cm"),
+        axis.text.y = element_text(size=9.5))+
   scale_fill_viridis_c()+
   xlab(expression(- log[10]*"(P-value)"))+
   labs(fill=expression(- log[10]*"(P-value)"))+
@@ -514,7 +515,8 @@ en.kegg.pos<-kegg.pos %>%
         legend.direction = 'vertical',
         panel.grid.major.x = element_blank(),
         aspect.ratio = 1.65,
-        legend.key.size= unit(.5, "cm"))+
+        legend.key.size= unit(.5, "cm"),
+        axis.text.y = element_text(size=10))+
   scale_fill_viridis_c()+
   xlab(expression(- log[10]*"(P-value)"))+
   labs(fill=expression(- log[10]*"(P-value)"))+
@@ -768,12 +770,206 @@ en.Msig.neg
 ```
 <br>
 
+# Scenario 3 
+
+In this scenario, we simply excluded si PRMT group.
+
+## Make venn
+
+```{r , echo=TRUE, message=FALSE, warning=FALSE}
+
+pos.SH<-SH.regulated %>% 
+  filter(grupSH=='Downregulated')
+pos.REC<-REC.regulated %>% 
+  filter(grupREC=='Upregulated')
+neg.SH<-SH.regulated %>% 
+  filter(grupSH=='Upregulated')
+neg.REC<-REC.regulated %>% 
+  filter(grupREC=='Downregulated')
+
+s3.list.pos<-list('Group SH'=as.character(pos.SH$Gene),
+                   'Group Recovery'=as.character(pos.REC$Gene))
+s3.list.neg<-list('Group SH'=as.character(neg.SH$Gene),
+                   'Group Recovery'=as.character(neg.REC$Gene))
+
+
+v3pos<-ggvenn(s3.list.pos,fill_color = c("#386cb0","#fdb462"),fill_alpha = .3,text_size = 5,show_percentage = F,set_name_size = 5)+
+  ggtitle("Overlap DEGs",subtitle = "Positively regulated by PRMT1")
+v3neg<-ggvenn(s3.list.neg,fill_color = c("#386cb0","#fdb462"),fill_alpha = .3,text_size = 5,show_percentage = F,set_name_size = 5)+
+  ggtitle("Overlap DEGs",subtitle = "Negatively regulated by PRMT1")
+
+
+grid.arrange(v3pos,v3neg,ncol=2)
+
+```
+
+<br>
+
+### Datatable
+```{r , echo=TRUE, message=FALSE, warning=FALSE}
+overlap<-as.data.frame(intersect(x=as.character(SH.regulated$Gene),y=as.character(REC.regulated$Gene)))
+colnames(overlap)[1]<-"Gene"
+
+overlap<-overlap %>% 
+  left_join(fc) %>% 
+  select(Gene,grupSH,grupREC)
+
+# Positive
+S3.Positive.cor<-(overlap %>% filter(grupSH == 'Downregulated' & grupREC == 'Upregulated'))
+create_dt(S3.Positive.cor)
+
+#negative
+S3.Negative.cor<-(overlap %>% filter(grupSH == 'Upregulated' & grupREC == 'Downregulated'))
+create_dt(S3.Negative.cor)
+
+```
+
+
+<br>
+
+### Enrichment (Positive)
+```{r , echo=TRUE, message=FALSE, warning=FALSE}
+library(enrichR)
+setEnrichrSite("Enrichr") # Human genes
+websiteLive <- TRUE
+
+
+dbs <- c("KEGG_2021_Human","MSigDB_Hallmark_2020")
+if (is.null(dbs)) websiteLive <- FALSE
+if (websiteLive) {
+    enriched <- enrichr(c(S3.Positive.cor$Gene), dbs)
+}
+
+
+s3.kegg.pos<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
+create_dt(s1.kegg.pos)
+
+colnames(s3.kegg.pos)
+en.kegg.pos<-s3.kegg.pos %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.8,
+        legend.key.size= unit(.5, "cm"),
+        axis.text.y = element_text(size=9))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("Top 20 KEGG_2021_Human",subtitle = 'Positively regulated by PRMT1')
+en.kegg.pos
+
+Msig.pos<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
+create_dt(Msig.pos)
+
+s3.en.Msig.pos<-Msig.pos %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("MSigDB_Hallmark_2020",subtitle = 'Positively regulated by PRMT1')
+s3.en.Msig.pos
+
+```
+<br>
+
+### Enrichment (Negative)
+```{r , echo=TRUE, message=FALSE, warning=FALSE}
+library(enrichR)
+setEnrichrSite("Enrichr") # Human genes
+websiteLive <- TRUE
+
+
+dbs <- c("KEGG_2021_Human","MSigDB_Hallmark_2020")
+if (is.null(dbs)) websiteLive <- FALSE
+if (websiteLive) {
+    enriched <- enrichr(c(S3.Negative.cor$Gene), dbs)
+}
+
+
+kegg.neg<-as.data.frame(if (websiteLive) enriched[["KEGG_2021_Human"]])
+create_dt(kegg.neg)
+
+en.kegg.neg<-kegg.neg %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = 1.5,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("KEGG_2021_Human",subtitle = 'Negatively regulated by PRMT1')
+en.kegg.neg
+
+Msig.neg<-as.data.frame(if (websiteLive) enriched[["MSigDB_Hallmark_2020"]])
+create_dt(Msig.neg)
+
+en.Msig.neg<-Msig.neg %>% 
+  filter(P.value < 0.05) %>% 
+  mutate(minlog=-(log10(P.value))) %>% 
+  arrange(desc(minlog)) %>% 
+  slice(1:20) %>% 
+  mutate(name=fct_reorder(Term,minlog)) %>% 
+  ggplot(aes(x=minlog,y=name,fill=minlog))+
+  geom_bar(stat="identity")+
+  theme_Publication()+
+  scale_x_continuous(expand=expand_scale(mult = c(0,0.2)))+
+  theme(axis.title.y = element_blank(),
+        legend.position = 'right',
+        legend.direction = 'vertical',
+        panel.grid.major.x = element_blank(),
+        aspect.ratio = .25,
+        legend.key.size= unit(.5, "cm"))+
+  scale_fill_viridis_c()+
+  xlab(expression(- log[10]*"(P-value)"))+
+  labs(fill=expression(- log[10]*"(P-value)"))+
+  ggtitle("MSigDB_Hallmark_2020",subtitle = 'Negatively regulated by PRMT1')
+en.Msig.neg
+
+```
+
+
 # Conclusion
 
 * From the results above, it seems that although overlapping genes in 3 conditions (Scenario 1) identified less in venn diagram compared to Scenario 2, the enrichment analysis showed better results (reference to other enrichment analysis from other PRMT1 RNAseq published paper)
 * We can now collect and tweak the figuring for publication
 * For example for enrichment, we chose only KEGG and selected certain terms
 
+## KEGG term selected
 ```{r conclusion, echo=TRUE, message=FALSE, warning=FALSE}
 create_dt(s1.kegg.pos)
 
@@ -808,15 +1004,212 @@ en.kegg.pos
 
 ```
 
-* Remember, KEGG above is only enrichment from 28 genes as show in venn and datatable below
+<br>
+
+## Connecting with clinical specimen
+
+* Remember, KEGG above is only enrichment from 28 genes as show in venn and datatable below. In total 28+14= 42 genes are regulated by PRMT1, now how about the expression of these genes in gastric cancer tissues?
 
 ```{r conclusion2, echo=TRUE, message=FALSE, warning=FALSE}
-v1pos
+grid.arrange(v1pos,v1neg,ncol=2)
+
+# Positive
 create_dt(S1.Positive.cor)
+
+# Negative
+create_dt(S1.Negative.cor)
+
+
+
+# In Gene Expression Note 2 we have downloaded rse of STAD TCGA using TCGAbiolinks
+## Just need data preparation, normalization, filtering, and retrieve 42 genes from this dataset
+library(TCGAbiolinks)
+
+rse <- get(load("STADIllumina_HiSeq.rda"))
+
+dataPrep_STAD<-TCGAanalyze_Preprocessing(rse,
+                                         cor.cut = .5,
+                                         datatype = "raw_count",
+                                         filename = "STAD_IlluminaHiSeq_RNASeqV2.png")
+
+# Normalization and filtering
+dataNorm<-TCGAanalyze_Normalization(tabDF = dataPrep_STAD,geneInfo = geneInfo,method = "gcContent")
+
+dim(dataNorm)
+
+# quantile filter of genes
+dataFilt <- TCGAanalyze_Filtering(tabDF = dataNorm,
+                                  method = "quantile",
+                                  qnt.cut =  0.25)
+dim(dataFilt)
+
+```
+
+### Gene filtering
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+f.dataFilt<-dataFilt
+dim(f.dataFilt)
+
+f.dataFilt<-as.data.frame(f.dataFilt) %>% 
+  mutate(Gene=row.names(f.dataFilt)) %>% 
+  select(416,1:415)
+rownames(f.dataFilt)<-NULL
+
+# get both pos and neg genes
+genelist<-rbind(S1.Positive.cor,S1.Negative.cor) %>% 
+  select(Gene)
+
+# vlookup leftjoin to other parameter
+genelist<-genelist %>% 
+  left_join(f.dataFilt)
+
+# check how many genes does not have expression
+# probably different gene names/id
+# or excluded before because of filtering threshold
+sum(is.na(genelist$`TCGA-3M-AB46-01A-11R-A414-31`)) #total 9 genes were not identified, let's ignore this for now
+
+# exclude those gene
+genelist<-genelist %>% 
+      drop_na()
+
+create_dt(genelist)
 
 
 ```
 
+
+<br>
+
+### Heatmap
+
+* Now, Let's try make a heatmap of all patients and do both row and column clustering.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, fig.width=10}
+h.genelist<-genelist
+h.genelist<-t(h.genelist)
+colnames(h.genelist)<-h.genelist[1,]
+h.genelist<-h.genelist[-1,]
+
+# remove 0 
+h.genelist[h.genelist==0] <- NA
+h.genelist<-h.genelist[complete.cases(h.genelist),]
+
+
+
+m.genelist<-matrix(as.numeric(h.genelist),
+                   ncol=ncol(h.genelist))
+colnames(m.genelist)<-colnames(h.genelist)
+rownames(m.genelist)<-rownames(m.genelist)
+
+m.genelist[m.genelist==0] <- NA
+m.genelist<-m.genelist[complete.cases(m.genelist),]
+
+m.genelist<-log(m.genelist)
+
+library(pheatmap)
+library(viridis)
+
+cal_z_score <- function(x){
+  (x - mean(x)) / sd(x)
+}
+
+data_subset_norm <- apply(m.genelist, 2, cal_z_score)
+data_subset_norm[data_subset_norm < -2] = -2
+data_subset_norm[data_subset_norm > 2] = 2
+
+pheatmap(t(data_subset_norm),
+         border_color = 'white')
+
+
+df.genelist<-as.data.frame(m.genelist)
+
+
+
+
+```
+
+<br>
+
+### Correlation
+
+* The heatmap does not look good. Probably there are some genes which are not correlated between the DEGs found in our RNAseq and patient tissues.
+* Hence, let's try to make correlation matrix first
+
+#### Corelation matrix
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, fig.width=12,fig.height=12}
+library(ggstatsplot)
+ggstatsplot::ggcorrmat(
+  data = df.genelist,
+  type = "parametric", # parametric for Pearson, nonparametric for Spearman's correlation
+  colors = c("steelblue","white","darkred"), # change default colors
+  title = "Correlation matrix of DEGs",
+  subtitle = "Stomach Adenocarcinoma (STAD-TCGA)",
+  matrix.type ='upper',
+  ggcorrplot.args = list(outline.color = "white", 
+                         hc.order = TRUE, #clustering
+                         pch.cex=3, # x size
+                         lab_size=3.25) #label size
+  
+)+ggplot2::theme(aspect.ratio = 1,
+                 axis.text = element_text(size=10, colour = 'black',family = 'Arial'),
+                 axis.text.x= element_text(family = 'Arial',hjust =0,vjust = 1)
+                 )+scale_x_discrete(position = 'top')
+```
+<br>
+
+#### Correlation plot
+
+* From the plot above, we can see that PRMT1 significantly (positively) correlate with  TTC5,TFB2M, MYC, C16orf91,and PTS while (negatively) correlate with ZDHHC1, AKT3, EVI5L, TP53INP2, and PTPRB.
+* Now we can make the correlation plot of individual patients and statistical analysis
+
+```{r echo=TRUE, message=FALSE, warning=FALSE,fig.width=10}
+
+# wide to long for positive
+df.genelist %>% 
+  gather('Gene','Value',c(TTC5,TFB2M,MYC, C16orf91,PTS)) %>% 
+  select(Gene,Value,PRMT1) %>% 
+    ggplot(aes(x=Value,y=PRMT1))+
+    geom_smooth(method=lm, fullrange=FALSE,se=TRUE)+
+    geom_point()+
+  facet_grid(~Gene,scales = "free_x")+
+    theme_Publication()+
+  theme(aspect.ratio = 1,
+        axis.title.y = element_blank())
+
+# wide to long for negative
+df.genelist %>% 
+  gather('Gene','Value',c(ZDHHC1, AKT3, EVI5L, TP53INP2, PTPRB)) %>% 
+  select(Gene,Value,PRMT1) %>% 
+    ggplot(aes(x=Value,y=PRMT1))+
+    geom_smooth(method=lm, fullrange=FALSE,se=TRUE)+
+    geom_point()+
+  facet_grid(~Gene,scales = "free_x")+
+  theme_Publication()+
+  theme(aspect.ratio = 1,
+        axis.title.y = element_blank())
+```
+
+<br>
+
+#### Datatable correlation
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+# You can check R and P value one by one like this
+cor.test(df.genelist$PRMT1,df.genelist$MYC)
+
+# or using this
+library(correlation)
+
+cor.df.genelist<-df.genelist %>% 
+  select(PRMT1,TTC5,TFB2M,MYC, C16orf91,PTS,ZDHHC1, AKT3, EVI5L, TP53INP2, PTPRB)
+
+correlation::correlation(cor.df.genelist,
+  include_factors = TRUE, method = "auto"
+) %>% 
+  filter(Parameter1 == 'PRMT1')
+
+```
 
 
 
