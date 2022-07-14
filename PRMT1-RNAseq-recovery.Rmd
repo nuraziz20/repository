@@ -1118,16 +1118,21 @@ data_subset_norm <- apply(m.genelist, 2, cal_z_score)
 data_subset_norm[data_subset_norm < -2] = -2
 data_subset_norm[data_subset_norm > 2] = 2
 
-pheatmap(t(data_subset_norm),
+pheatmap::pheatmap(t(data_subset_norm),
          border_color = 'white')
 
 
 df.genelist<-as.data.frame(m.genelist)
 
-
-
-
 ```
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+#save the heatmap
+png('heatmap prmt shrec stad.png',
+    width=1800,height=600,res=150)
+dev.off()
+```
+
 
 <br>
 
@@ -1176,7 +1181,7 @@ df.genelist %>%
   facet_grid(~Gene,scales = "free_x")+
     theme_Publication()+
   theme(aspect.ratio = 1,
-        axis.title.y = element_blank())
+        axis.title.x = element_blank())
 
 # wide to long for negative
 df.genelist %>% 
@@ -1188,7 +1193,7 @@ df.genelist %>%
   facet_grid(~Gene,scales = "free_x")+
   theme_Publication()+
   theme(aspect.ratio = 1,
-        axis.title.y = element_blank())
+        axis.title.x = element_blank())
 ```
 
 <br>
@@ -1210,6 +1215,93 @@ correlation::correlation(cor.df.genelist,
   filter(Parameter1 == 'PRMT1')
 
 ```
+
+<br>
+
+#### Selected Heatmap and Cor. Matrix
+
+```{r echo=TRUE, message=FALSE, warning=FALSE,fig.width=10}
+sel.df.genelist<-df.genelist %>% 
+  select(PRMT1,TTC5,TFB2M,MYC,C16orf91,PTS,ZDHHC1,EVI5L,PTPRB)
+
+ggstatsplot::ggcorrmat(
+  data = sel.df.genelist,
+  type = "parametric", # parametric for Pearson, nonparametric for Spearman's correlation
+  colors = c("steelblue","white","darkred"), # change default colors
+  title = "Correlation matrix of DEGs",
+  subtitle = "Stomach Adenocarcinoma (STAD-TCGA)",
+  matrix.type ='upper',
+  ggcorrplot.args = list(outline.color = "white", 
+                         hc.order = TRUE, #clustering
+                         pch.cex=4, # x size
+                         lab_size=3.25) #label size
+  
+)+ggplot2::theme(aspect.ratio = 1,
+                 axis.text = element_text(size=10, colour = 'black',family = 'Arial'),
+                 axis.text.x= element_text(family = 'Arial',hjust =0,vjust = 1)
+)+scale_x_discrete(position = 'top')
+
+##########
+
+h.genelist<-genelist
+h.genelist<-h.genelist %>% 
+  filter(Gene == 'PRMT1' |
+           Gene == 'TTC5'|
+           Gene == 'TFB2M'|
+           Gene == 'MYC'|
+           Gene == 'C16orf91'|
+           Gene == 'PTS'|
+           Gene == 'ZDHHC1'|
+           Gene == 'EVI5L' |
+           Gene == 'PTPRB')
+
+h.genelist<-t(h.genelist)
+colnames(h.genelist)<-h.genelist[1,]
+h.genelist<-h.genelist[-1,]
+
+# remove 0 
+h.genelist[h.genelist==0] <- NA
+h.genelist<-h.genelist[complete.cases(h.genelist),]
+
+
+
+m.genelist<-matrix(as.numeric(h.genelist),
+                   ncol=ncol(h.genelist))
+colnames(m.genelist)<-colnames(h.genelist)
+rownames(m.genelist)<-rownames(m.genelist)
+
+m.genelist[m.genelist==0] <- NA
+m.genelist<-m.genelist[complete.cases(m.genelist),]
+
+m.genelist<-log(m.genelist)
+
+library(pheatmap)
+library(viridis)
+library(ComplexHeatmap)
+
+cal_z_score <- function(x){
+  (x - mean(x)) / sd(x)
+}
+
+data_subset_norm <- apply(m.genelist, 2, cal_z_score)
+data_subset_norm[data_subset_norm < -2] = -2
+data_subset_norm[data_subset_norm > 2] = 2
+
+colmy<-colorRampPalette(c("#4DBBD5B2","white","#E64B35B2"))(50)
+colmy<-paste0(colmy,'7f')
+
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE,fig.width=12,fig.height=4}
+
+ComplexHeatmap::pheatmap(t(data_subset_norm),
+                         show_colnames = F,
+                         color = colmy,
+                         #row_title = "Genes", row_title_rot = 0,
+                         column_title = "Patients",
+                         heatmap_legend_param = list(title = gt_render("<span style='color:black'>*z-score*</span>")))
+```
+
 
 
 
