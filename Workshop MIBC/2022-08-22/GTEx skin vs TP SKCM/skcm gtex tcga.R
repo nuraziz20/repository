@@ -127,6 +127,7 @@ dataFilt.skcm.hugo$Row.names<-NULL
 
 
 write.csv(dataFilt.skcm.hugo,"GTEx TCGA tumor skcm.csv")
+dataFilt.skcm.hugo
 selected<-dataFilt.skcm.hugo %>% 
   filter(hgnc_symbol=="LAMC2")
 
@@ -140,10 +141,12 @@ head(t.selected)
 colnames(t.selected)
 #remove e(ensemble) and h(hgsc) group
 t.selected<-t.selected %>% 
-  filter(Group == 'S' | Group =='T')
+  filter(Group == 'S' | Group =='T') %>% 
+  mutate(Group=case_when(Group == "S" ~ "GTEx Normal",
+                      Group == "T" ~ "TCGA-SKCM Tumor"))
 
 ggplot(data=t.selected,aes(x=Group,y=log2(as.numeric(`exp`)),fill=Group))+
-  stat_boxplot(geom ='errorbar',width=.2) +
+  stat_boxplot(geom ='errorbar',width=.2) 
   geom_jitter(colour='gray90',alpha=.8,width = .2)+
   geom_boxplot(width=.6)+
   theme_Publication()+
@@ -151,5 +154,101 @@ ggplot(data=t.selected,aes(x=Group,y=log2(as.numeric(`exp`)),fill=Group))+
 
 # statistics
 wilcox.test(log2(as.numeric(`exp`)) ~ Group, data = t.selected, exact = FALSE)
+t.selected %>% 
+  count(Group)
+
+
+#### Many genes #####
+selected<-dataFilt.skcm.hugo %>% 
+  filter(hgnc_symbol=="METTL18"|
+         hgnc_symbol=="CAMKMT"|
+         hgnc_symbol=="EEF2KMT"|
+         hgnc_symbol=="ETFBKMT"|
+         hgnc_symbol=="METTL21A"|
+         hgnc_symbol=="EEF1AKMT3"|
+         hgnc_symbol=="METTL21C"|
+         hgnc_symbol=="VCPKMT"|
+         hgnc_symbol=="METTL22"|
+         hgnc_symbol=="METTL23")
+
+rownames(selected)<-selected$hgnc_symbol
+
+t.selected<-as.data.frame(t(selected))
+colnames(t.selected)
+t.selected<-as.data.frame(t.selected) %>% 
+  mutate(Group=substr(rownames(t.selected),1,1))
+head(t.selected)
+
+# Plotting
+colnames(t.selected)
+#remove e(ensemble) and h(hgsc) group
+t.selected<-t.selected %>% 
+  filter(Group == 'S' | Group =='T')
+
+#apply log2 to 10 column
+m16<-t.selected %>% 
+  mutate(log2.METTL18 = log2(as.numeric(METTL18)),
+         log2.METTL23 = log2(as.numeric(METTL23)),
+         log2.METTL21A = log2(as.numeric(METTL21A)),
+         log2.CAMKMT = log2(as.numeric(CAMKMT)),
+         log2.METTL21C = log2(as.numeric(METTL21C)),
+         log2.ETFBKMT = log2(as.numeric(ETFBKMT)),
+         log2.EEF1AKMT3 = log2(as.numeric(EEF1AKMT3)),
+         log2.EEF2KMT = log2(as.numeric(EEF2KMT)),
+         log2.VCPKMT = log2(as.numeric(VCPKMT)),
+         log2.METTL22 = log2(as.numeric(METTL22))) %>% 
+  dplyr::select(Group, 
+         log2.METTL18 ,
+         log2.METTL23,
+         log2.METTL21A,
+         log2.CAMKMT,
+         log2.METTL21C,
+         log2.ETFBKMT,
+         log2.EEF1AKMT3,
+         log2.EEF2KMT,
+         log2.VCPKMT,
+         log2.METTL22)
+
+m16<-m16 %>% 
+  rename(METTL18=log2.METTL18 ,
+         METTL23=log2.METTL23,
+         METTL21A=log2.METTL21A,
+         CAMKMT=log2.CAMKMT,
+         ETFBKMT=log2.ETFBKMT,
+         EEF1AKMT3=log2.EEF1AKMT3,
+         EEF2KMT=log2.EEF2KMT,
+         VCPKMT=log2.VCPKMT,
+         METTL22=log2.METTL22) %>% 
+  gather('Gene','Value',c(METTL18,
+                          METTL23,
+                          METTL21A,
+                          CAMKMT,
+                          ETFBKMT,
+                          EEF1AKMT3,
+                          EEF2KMT,
+                          VCPKMT,
+                          METTL22)) %>% 
+  dplyr::select(Gene,Value,Group) 
+
+
+ggplot(data=m16,aes(x=Group,y=Value,fill=Group))+
+  stat_boxplot(geom ='errorbar',width=.2) +
+  geom_jitter(colour='gray90',alpha=.8,width = .2)+
+  geom_boxplot(width=.6)+
+  facet_grid(~Gene)+
+  theme_Publication()+
+  scale_fill_aziz()
+
+
+ggsave('skin.png')
+
+head(m16)
+# statistics
+kruskal.test(Value ~ , data = m16, exact = FALSE)
+
+m16 %>% 
+  dplyr::filter(Gene=="EEF2KMT") %>% 
+  kruskal.test(EEF2KMT ~ Group, data = m16)
+
 t.selected %>% 
   count(Group)
