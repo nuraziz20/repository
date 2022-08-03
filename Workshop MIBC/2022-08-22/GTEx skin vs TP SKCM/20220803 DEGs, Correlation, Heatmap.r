@@ -1,5 +1,7 @@
 # library
-install.packages("tidyverse","dplyr") #omit this if you have install tidyverse/dplyr
+install.packages("tidyverse") #omit this if you have install tidyverse/dplyr
+install.packages("dplyr")
+
 library(tidyverse)
 library(dplyr)
 
