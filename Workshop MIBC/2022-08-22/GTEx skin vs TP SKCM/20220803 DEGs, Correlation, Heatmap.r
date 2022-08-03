@@ -81,6 +81,7 @@ df.DEGs %>%
   theme(aspect.ratio = 1)
 
 # matrix correlation heatmap
+library(ggcorrplot)
 library(ggstatsplot)
 ggstatsplot::ggcorrmat(
   data = df.DEGs,
