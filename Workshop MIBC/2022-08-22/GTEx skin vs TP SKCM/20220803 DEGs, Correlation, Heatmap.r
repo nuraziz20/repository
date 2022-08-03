@@ -105,6 +105,10 @@ ggstatsplot::ggcorrmat(
 # heatmap each patients
 library(pheatmap)
 library(viridis)
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("ComplexHeatmap")
 library(ComplexHeatmap)
 
 cal_z_score <- function(x){
