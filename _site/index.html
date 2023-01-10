@@ -13,7 +13,7 @@
 
 <title>Nur Aziz</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
@@ -35,12 +35,12 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="site_libs/htmlwidgets-1.6.0/htmlwidgets.js"></script>
 <link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
-<script src="site_libs/datatables-binding-0.23/datatables.js"></script>
-<link href="site_libs/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
-<link href="site_libs/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet" />
-<script src="site_libs/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="site_libs/datatables-binding-0.26/datatables.js"></script>
+<link href="site_libs/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.12.1/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.12.1/js/jquery.dataTables.min.js"></script>
 <link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
 <script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
 
@@ -157,11 +157,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -190,8 +194,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -199,16 +203,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -392,9 +389,9 @@ have elucidated several molecular targets of plant extracts or compounds
 in the context of their anti-inflammation property.</p>
 <p>I am currently searching for a <strong>postdoctoral</strong>
 position. Download a brief version of <a
-href="https://github.com/nuraziz20/repository/raw/main/docs/Curriculum%20Vitae%20-%20Nur%20Aziz.pdf">my
+href="https://github.com/nuraziz20/repository/raw/main/docs/ResumeNurAziz2022.pdf">my
 CV as PDF</a>.</p>
-<p><img src="img/home1.jpg" /></p>
+<p><img src="img/home1.JPG" /></p>
 <div class="col-6">
 <div class="line-block">
 <i class="fas fa-map-marker-alt"></i> Department of Integrative
@@ -443,8 +440,8 @@ Bandung, Indonesia</td>
 <h3 class="nohead publications">Publications</h3>
 <table>
 <colgroup>
-<col width="5%" />
-<col width="94%" />
+<col width="3%" />
+<col width="96%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -454,6 +451,31 @@ Bandung, Indonesia</td>
 </thead>
 <tbody>
 <tr class="odd">
+<td align="left">Research Article</td>
+<td align="left"><strong><em>Nur Aziz</em></strong> (2022). <a
+href="https://jurnal.syntaxliterate.co.id/index.php/syntax-literate/article/view/10102/6059">Potential
+Roles of Methyltransferases Family 16 in Breast Cancer</a> Syntax
+Literate</td>
+</tr>
+<tr class="even">
+<td align="left">Research Article</td>
+<td align="left">Young-Su Yi, Han Gyung Kim, Ji Hye Kim, Woo Seok Yang,
+Eunji Kim, Jae Gwang Park, <strong><em>Nur Aziz</em></strong>, Narayanan
+Parameswaran, Jae Youl Cho (2022). <a
+href="https://journals.sagepub.com/doi/pdf/10.1177/03946320221133018">Syk
+promotes phagocytosis by inducing reactive oxygen species generation and
+suppressing SOCS1 in macrophage-mediated inflammatory responses</a>
+International Journal of Immunopathology and Pharmacology</td>
+</tr>
+<tr class="odd">
+<td align="left">Research Article</td>
+<td align="left"><strong><em>Nur Aziz</em></strong>, Eunji Kim, Yanyan
+Yang, Han Gyung Kim, Tao Yu, Jae Youl Cho (2022). <a
+href="https://www.bmbreports.org/journal/download_pdf.php?doi=10.5483/BMBRep.2022.55.8.115">p38-Dependent
+c-Jun Degradation Contributes to Reduced PGE2 Production in Sodium
+Orthovanadate-Treated Macrophages</a> BMB Reports</td>
+</tr>
+<tr class="even">
 <td align="left">Research Article</td>
 <td align="left">Yo Han Hong, <strong><em>Nur Aziz</em></strong>
 [<strong>shared first authorships</strong>], Jae Gwang Park, Dagyeong
@@ -465,7 +487,7 @@ href="https://doi.org/10.1016/j.canlet.2022.215803">The
 EEF1AKMT3/MAP2K7/TP53 axis suppresses tumor invasiveness and metastasis
 of gastric cancer</a> Cancer Letters</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Research Article</td>
 <td align="left">Kon Kuk Shin, Sang Hee Park, Hye Yeon Lim, Laura Rojas
 Lorza, Nurinanda Prisky Qomaladewi, Long You, <strong><em>Nur
@@ -474,14 +496,6 @@ Noh, Dong-Keun Yie, Deok Jeong, Jongsung Lee, Jae Youl Cho (2022). <a
 href="https://www.mdpi.com/2223-7747/11/10/1383/pdf?version=1653303931">In
 Vitro Anti-Photoaging and Skin Protective Effects of Licania macrocarpa
 Cuatrec Methanol Extract</a> Plants</td>
-</tr>
-<tr class="odd">
-<td align="left">Research Article (In Press)</td>
-<td align="left"><strong><em>Nur Aziz</em></strong>, Eunji Kim, Yanyan
-Yang, Han Gyung Kim, Tao Yu, Jae Youl Cho (2022). <a
-href="http://submit.bmbreports.org/Source/PDF_PaperDownload.rang?pn=XVw1NDQwXVw=">p38-Dependent
-c-Jun Degradation Contributes to Reduced PGE2 Production in Sodium
-Orthovanadate-Treated Macrophages</a> BMB Reports</td>
 </tr>
 <tr class="even">
 <td align="left">Research Article</td>
@@ -610,8 +624,8 @@ Indonesia</td>
 </div>
 <div id="talks" class="section level3">
 <h3>Talks</h3>
-<div id="htmlwidget-2ac7d0bd244ac8e3564d" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2ac7d0bd244ac8e3564d">{"x":{"filter":"none","vertical":false,"data":[["2021, 12"],["<em>Sungkyun Biotech International Conference 2021: The EEF1AKMT3/MAP2K7/TP53 axis suppresses tumor invasiveness and metastasis of gastric cancer<\/em>, Suwon, South Korea"]],"container":"<table class=\"row-border\">\n  <thead>\n    <tr>\n      <th>Date<\/th>\n      <th>Talk<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-f2e3c585478652b8ef23" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f2e3c585478652b8ef23">{"x":{"filter":"none","vertical":false,"data":[["2021, 12"],["<em>Sungkyun Biotech International Conference 2021: The EEF1AKMT3/MAP2K7/TP53 axis suppresses tumor invasiveness and metastasis of gastric cancer<\/em>, Suwon, South Korea"]],"container":"<table class=\"row-border\">\n  <thead>\n    <tr>\n      <th>Date<\/th>\n      <th>Talk<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="posters" class="section level3 nohead posters">
 <h3 class="nohead posters">Posters</h3>
@@ -896,8 +910,8 @@ KAM BG-ITB<br>teaching elementary and junior high school students
 <h2 class="personal service nohead">Book written</h2>
 <table>
 <colgroup>
-<col width="3%" />
-<col width="96%" />
+<col width="4%" />
+<col width="95%" />
 </colgroup>
 <thead>
 <tr class="header">
