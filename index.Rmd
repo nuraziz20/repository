@@ -68,7 +68,15 @@ Download a brief version of [my CV as PDF](https://github.com/nuraziz20/reposito
 ```
 <br>
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6GG23FRN33"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
+  gtag('config', 'G-6GG23FRN33');
+</script>
 
 # Academia
 ## Education {.education .nohead}
