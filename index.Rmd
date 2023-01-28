@@ -49,7 +49,7 @@ I am passionate about molecular biology research, particularly in **cancer biolo
 My **academic background** mainly focused on understanding the molecular complexity of protein methylation in cancer. The need to explore public RNAseq datasets from cancer patients drove me to (self)-study **bioinformatics** which I also found a very fascinating field. In addition, I am also familiar with molecular signaling such as inflammation-related transcription factor signaling ie. NF-kB, AP-1, and IRF3. As part of my combined Master-PhD study, I have elucidated several molecular targets of plant extracts or compounds in the context of their anti-inflammation property. 
 
 I am currently searching for a **postdoctoral** position.
-Download a brief version of [my CV as PDF](https://github.com/nuraziz20/repository/raw/main/docs/ResumeNurAziz2022.pdf).
+Download a brief version of [my CV as PDF](https://github.com/nuraziz20/repository/raw/main/docs/Curriculum Vitae - Nur Aziz.pdf).
 
 
 
