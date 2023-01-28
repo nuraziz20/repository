@@ -60,6 +60,8 @@ Download a brief version of [my CV as PDF](https://github.com/nuraziz20/reposito
 
 
 | <i class="fas fa-map-marker-alt"></i> Department of Integrative Biotechnology,\ Sungkyunkwan University, South Korea 
+| <i class="fas fa-map-marker-alt"></i> Pharmacy Program,\ Universitas Ma Chung, Indonesia
+
 | <i class="fas fa-envelope"></i>  nuraziz\@skku.edu nur.aziz\@machung.ac.id
 | <i class="fas fa-globe"></i>  [www.nuraziz.site](https://nuraziz.site) 
 | <i class="fab fa-github"></i>  [nuraziz20](https://github.com/nuraziz20) 
