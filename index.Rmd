@@ -42,32 +42,39 @@ cv_entries <- read_csv("_content/cv_entries.csv") %>%
 
 <br>
 
-# Summary
+## About Me
 
-I am passionate about molecular biology research, particularly in **cancer biology** and **innate immunity**. 
-
-My **academic background** mainly focused on understanding the molecular complexity of protein methylation in cancer. The need to explore public RNAseq datasets from cancer patients drove me to (self)-study **bioinformatics** which I also found a very fascinating field. In addition, I am also familiar with molecular signaling such as inflammation-related transcription factor signaling ie. NF-kB, AP-1, and IRF3. As part of my combined Master-PhD study, I have elucidated several molecular targets of plant extracts or compounds in the context of their anti-inflammation property. 
-
-I am currently searching for a **postdoctoral** position.
-Download a brief version of [my CV as PDF](https://github.com/nuraziz20/repository/raw/main/docs/Nur Aziz 2022 [Recovered].pdf).
-
-
-
+I am passionate about **molecular biology research**, particularly in **cancer biology** and **innate immunity**.
 
 ![](img/home1.jpg)
+
+### Academic Background
+
+My research focuses on unraveling the molecular complexity of **protein methylation in cancer**. My curiosity about public RNA-seq datasets from cancer patients led me to (self)-study **bioinformatics**, a field I found equally fascinating. Additionally, I have a strong foundation in **molecular signaling**, particularly inflammation-related transcription factor pathways such as **NF-κB, AP-1, and IRF3**.
+
+### Research Experience
+
+As part of my combined **Master-PhD study**, I explored the molecular targets of **plant extracts and bioactive compounds**, investigating their potential **anti-inflammatory properties**.
+
+### Current Position
+
+I am currently a **lecturer** at the **Department of Histology and Cell Biology, Faculty of Medicine, Public Health, and Nursing, Universitas Gadjah Mada**, where I continue to engage in research and teaching in these fields.
+
+
 
 ```{block type='col-6', echo=TRUE}
 
 
-| <i class="fas fa-map-marker-alt"></i> Department of Integrative Biotechnology,\ Sungkyunkwan University, South Korea 
-| <i class="fas fa-map-marker-alt"></i> Pharmacy Program,\ Universitas Ma Chung, Indonesia
 
-| <i class="fas fa-envelope"></i>  nuraziz\@skku.edu nur.aziz\@machung.ac.id
-| <i class="fas fa-globe"></i>  [www.nuraziz.site](https://nuraziz.site) 
+| <i class="fas fa-map-marker-alt"></i> Department of Histology and Cell Biology,\ Faculty of Medicine, Public Health, and Nursing,\ Universitas Gadjah Mada, Indonesia
+
+| <i class="fas fa-envelope"></i>  nur.aziz20\@ugm.ac.id
+| <i class="fas fa-globe"></i>  [nuraziz.netlify.app](https://nuraziz.netlify.app) 
 | <i class="fab fa-github"></i>  [nuraziz20](https://github.com/nuraziz20) 
 
 
 ```
+
 <br>
 
 <!-- Google tag (gtag.js) -->
